@@ -1,4 +1,4 @@
-
+# AUFGABE1
 
 def count_lines_and_words(file):
     with open(file, "r") as data:
@@ -6,6 +6,9 @@ def count_lines_and_words(file):
         lines_num = len(lines)                                  # length of list == number of lines
         word_num = sum([len(line.split()) for line in lines])   # example: sum([2,2,2,2]) == 8
         return lines_num, word_num                              # return result
+
+
+# AUFGABE2
 
 
 def find_zero(f, a, b):
