@@ -5,6 +5,9 @@ def count_lines_and_words(file):
         lines = data.readlines()                                # store lines as a list
         lines_num = len(lines)                                  # length of list == number of lines
         word_num = sum([len(line.split()) for line in lines])   # example: sum([2,2,2,2]) == 8
+        # alternative to sum-solution above:
+        # data.seek(0,0)  # change file position to the start of the file (tell() to see file pos)
+        # word_num = len(data.read().split())
         return lines_num, word_num                              # return result
 
 
