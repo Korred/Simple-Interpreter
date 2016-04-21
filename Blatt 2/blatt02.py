@@ -1,4 +1,5 @@
 import random
+from collections import deque
 # FYI: Run only specific test - for example: py.test -q -s blatt02.py::test_stack_list
 
 
@@ -50,12 +51,29 @@ def make_random_text(nest, num):
 
 # 3.3
 
+def hanoi(discs):
+    return (deque([i for i in range(discs, 0, -1)]), deque(), deque())
 
 
+def move(towers,f,t):
+    amt = len(towers)
+    if not (f < amt and t < amt):
+        raise ValueError("One of the provided towers does not exist!")
+    else:
+        try:
+            disc = towers[f].pop()
+        except IndexError:
+            raise ValueError("Cannot move disc from tower {} as no disc present!".format(str(f)))
 
-
-
-
+        if len(towers[t]) > 0:
+            upper_disc = towers[t][-1]
+            if disc < upper_disc:
+                towers[t].append(disc)
+            else:
+                raise ValueError("Cannot place disc {} on smaller disc {}!".format(str(disc), str(upper_disc)))
+        else:
+            towers[t].append(disc)
+            
 
 
 
