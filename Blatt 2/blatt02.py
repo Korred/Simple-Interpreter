@@ -8,9 +8,9 @@ def compute_word_occurences(text):
     words = text.split()
     nest = dict()
     for i in range(len(words)):
-        if i+1 < len(words):
+        if i + 1 < len(words):
             curr = words[i]
-            foll = words[i+1]
+            foll = words[i + 1]
             if curr not in nest:
                 nest[curr] = dict()
             if foll not in nest[curr]:
@@ -23,7 +23,7 @@ def make_random_text(nest, num):
     start = random.choice(list(nest.keys()))
     random_text = [start]
 
-    for i in range(num-1):
+    for i in range(num - 1):
         d = nest[random_text[i]]
         if d:  # check if dict for given word is not empty
             max_word = max(d.keys(), key=lambda k: d[k])  # lambda function to define key for max
@@ -32,7 +32,7 @@ def make_random_text(nest, num):
             break
     return " ".join(random_text)
 
-# Alternativ:
+# Alternative solution:
 
 #def compute_word_occurences(str):
 #    words = str.split()                 # split by words
@@ -63,21 +63,32 @@ def make_random_text(nest, num):
 #        text += random.choice(dict[rand_word].keys())
 #    return text
 
+
+# AUFGABE 2
+
+def send(obj, name, *args):
+    cls = obj.__class__
+    # base of of class 'object' is None
+    while cls is not None:
+        if name in cls.__dict__:
+            return cls.__dict__[name](obj, *args)
+        cls = cls.__base__
+    if name == "message_not_understood":
+        raise AttributeError(obj.__class__.__name__ + " object does not have attribute " + name)
+    else:
+        return send(obj, "message_not_understood", name, *args)
+        # RETURN here - otherwise "None" will be returned
+        # calling send without the return will result in discarding
+        # the next return value of the recursion
+
 # AUFGABE 3
 # Mutability of common python types:
 
 # The following are immutable objects:
-#    Numeric types: int, float, complex
-#    string
-#    tuple
-#    frozen set
-#    bytes
-
+#    int, float, complex, string, tuple, frozen set, bytes
 # The following objects are mutable:
-#    list
-#    dict
-#    set
-#    byte array
+#    list, dict, set, byte, array
+
 
 # 3.3
 
@@ -85,15 +96,16 @@ def hanoi(discs):
     return (deque([i for i in range(discs, 0, -1)]), deque(), deque())
 
 
-def move(towers,f,t):
+def move(towers, f, t):
+    # ValueError : argument that has the right type but an inappropriate value
     amt = len(towers)
     if not (f < amt and t < amt):
-        raise ValueError("One of the provided towers does not exist!")
+        raise ValueError("Tower at provided value does not exist!")
     else:
         try:
             disc = towers[f].pop()
         except IndexError:
-            raise ValueError("Cannot move disc from tower {} as no disc present!".format(str(f)))
+            raise ValueError("Tower at provided value {} has no disc present! Cannot move any disc.".format(str(f)))
 
         if len(towers[t]) > 0:
             upper_disc = towers[t][-1]
@@ -103,12 +115,3 @@ def move(towers,f,t):
                 raise ValueError("Cannot place disc {} on smaller disc {}!".format(str(disc), str(upper_disc)))
         else:
             towers[t].append(disc)
-            
-
-
-
-
-
-
-
-
