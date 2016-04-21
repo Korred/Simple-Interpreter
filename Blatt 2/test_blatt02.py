@@ -1,5 +1,7 @@
 import py
+import pytest
 from blatt02 import *
+from collections import deque
 # AUFGABE 1
 
 def test_word_occurences():
@@ -94,18 +96,63 @@ def test_send_message_not_understood():
 # Aufgabe 3.1 - Stack
 
 def test_push():
-    pass #xxx implement me
+    # push/add element to stack top
+    stack = [1, 2, 3]
+    stack.append(4)
+    assert stack == [1, 2, 3, 4]
+
 
 def test_pop():
-    pass #xxx implement me
+    # pop/remove element from stack top
+    stack = [1, 2, 3, 4]
+    assert stack.pop() == 4
+    assert stack == [1, 2, 3]
+
+
+def test_peek():
+    # inspect topmost element (last-in)
+    stack = [1, 2, 3]
+    assert stack[-1] == 3
+
+    # inspect topmost element will throw IndexError if list/stack is empty
+    stack = []
+    with pytest.raises(IndexError):
+        stack[-1]
 
 # Aufgabe 3.2 - Queue
+# Deques are a generalization of stacks and queues
+# (the name is pronounced “deck” and is short for “double-ended queue”)
 
 def test_enqueue():
-    pass #xxx implement me
+    deq = deque([1, 2, 3])
+
+    # push/add element from the right
+    deq.append(4)
+    assert list(deq) == [1,2,3,4]
+
+    # push/add element from the left
+    deq.appendleft(4)
+    assert list(deq) == [4,1,2,3,4]
+
 
 def test_dequeue():
-    pass #xxx implement me
+    deq = deque([4,1,2,3,4])
+
+    # pop/remove element from the right
+    assert deq.pop() == 4
+    assert list(deq) == [4,1,2,3]
+
+    # pop/remove element from the right
+    assert deq.popleft() == 4
+    assert list(deq) == [1,2,3]
+
+
+def test_enqueue_bound():
+    # deque can be bounded - will overwrite/replace elements on the opposite side of append
+    deq = deque([],5)
+    for i in range(20):
+        deq.append(i)
+    assert list(deq) == [15,16,17,18,19]
 
 # Aufgabe 3.3
 
