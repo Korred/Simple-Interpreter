@@ -32,6 +32,36 @@ def make_random_text(nest, num):
             break
     return " ".join(random_text)
 
+# Alternativ:
+
+#def compute_word_occurences(str):
+#    words = str.split()                 # split by words
+#    dict = {}
+#    for word in words:                  # check all words in the string
+#        dict[word] = get_following_words_as_dict(word,words)
+#    return dict
+
+# in: single word and list of words
+# out: dictionary of word's followers as key and amount of occurences as value
+#def get_following_words_as_dict(word,words):
+#    followers = {}
+#    for i in range(0,len(words)-1):
+#        if word == words[i]:
+#            follower = words[i+1]
+#            if follower in followers:   # increase amount of word thats already in the dictionary
+#                followers[follower] = followers[follower]+1
+#            else:                       # first entry in dictionary
+#                followers[follower] = 1
+#    return followers
+
+#def make_random_text(dict,amount):
+#    import random
+#    text = ""
+#    for i in range(0,amount):
+#        rand_word = random.choice(dict.keys())
+#        text += rand_word
+#        text += random.choice(dict[rand_word].keys())
+#    return text
 
 # AUFGABE 3
 # Mutability of common python types:
