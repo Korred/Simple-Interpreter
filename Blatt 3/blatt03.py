@@ -44,3 +44,17 @@ def lifestring(field):
 				string.append("\n")
 
 	return "".join(string)
+
+
+# AUFGABE 3
+
+class OpenClass(type):
+	def __new__(cls,name,bases,attr):
+		if name == "__enhance__":
+			att_keys = [key for key in attr if not key.startswith("__")]
+			for b in bases:
+				for key in att_keys:
+					setattr(b,key,attr[key])
+		else:
+			# return type.__new__(cls, name, bases, attr)
+			return super(OpenClass,cls).__new__(cls, name, bases, attr)
