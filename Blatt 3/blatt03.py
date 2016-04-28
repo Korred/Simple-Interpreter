@@ -1,6 +1,19 @@
 # AUFGABE 1
 
-# mygetattribute nowhere to be found!
+def mygetattr(obj, name):
+    # gets attributes of instance
+    try:
+        return obj.__dict__[name]
+    except (KeyError, AttributeError):
+        pass # <-- modify this part
+    # else if not found - get attributes of class
+    # return mygetattr_class(obj, name)
+    # raise AttributeError("Attribute was not found)
+
+def register_override():
+    global virtual_attr
+    virtual_attr = dict()
+    # ...
 
 # AUFGABE 2
 
