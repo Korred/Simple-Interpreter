@@ -64,6 +64,61 @@ def lifestring(field):
 
     return "".join(string)
 
+########
+def lifestep2(cells):
+    nextGen = set([])
+    # alive
+    for c in cells:
+        tempNeighbors = getNeighbors(c)
+        neighbors = cells.intersection(tempNeighbors)
+        if (len(neighbors) in set([2,3])):
+            # stay alive
+            nextGen.add(c)
+    if (cells != set([])):
+        tempX = [t[0] for t in cells]
+        tempY = [t[1] for t in cells]
+        minX = min(tempX)
+        maxX = max(tempX)
+        minY = min(tempY)
+        maxY = max(tempY)
+        for dx in range(minX-1,maxX+2):     # expand for border cells
+            for dy in range(minY-1,maxY+2):
+                # reborn
+                if (len(cells.intersection(getNeighbors((dx,dy)))) == 3):
+                    nextGen.add((dx,dy))
+    return nextGen
+
+def getNeighbors(cell):
+    x = cell[0]
+    y = cell[1]
+    neighbors = set([])
+    for dx in set([-1,0,1]):
+        for dy in set([-1,0,1]):
+            if not ((dx,dy) == (0,0)):
+                neighbors.add((x+dx,y+dy))
+    return neighbors
+
+def lifestring2(cells):
+    if (cells == set([])):
+        return ""
+    else:
+        tempX = [t[0] for t in cells]
+        tempY = [t[1] for t in cells]
+        minX = min(tempX)
+        maxX = max(tempX)
+        minY = min(tempY)
+        maxY = max(tempY)
+        board = ""
+        for dy in range(minY,maxY+1):
+            for dx in range(minX,maxX+1):
+                if ((dx,dy) in cells):
+                    board += "X"
+                else:
+                    board += " "
+            if ((maxY > 0) & (dy != maxY)):
+                board += "\n"        
+        return board
+#######
 
 # AUFGABE 3
 
