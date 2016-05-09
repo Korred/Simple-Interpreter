@@ -13,17 +13,20 @@ class htree(object):
 
 
 def make_tree(mapping):
-    import operator
     # mapping is a dict which is orderless (unless it is an OrderedDict)
     # assuming it is not - sort mapping by ascending values
 
-    sorted_map = sorted(mapping.items(), key=operator.itemgetter(1))
-    first_node = sorted_map.pop(0)[0]
-    curr_tree = htree(first_node)
+    node_list = sorted([(htree(k), mapping[k]) for k in mapping], key=lambda x: x[1])
 
-    for i in sorted_map:
-        curr_tree = htree(None, curr_tree, htree(i[0]))
-    return curr_tree
+    while node_list:
+        if len(node_list) == 1:
+            return node_list[0][0]
+        else:
+            l = node_list.pop(0)
+            r = node_list.pop(0)
+            new_tree = htree(None, l[0], r[0])
+            node_list.append((new_tree, l[1] + r[1]))
+            node_list.sort(key=lambda x: x[1])
 
 
 def make_mapping(tree):
@@ -46,6 +49,7 @@ def make_mapping(tree):
 
 def encode(mapping, string):
     return "".join(map(lambda x: mapping[x], list(string)))
+
 
 def decode(tree, code):
     curr_node = tree
