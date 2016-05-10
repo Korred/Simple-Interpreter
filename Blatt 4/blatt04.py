@@ -26,14 +26,13 @@ def make_tree(freq):
     for value, weight in freq.items():
         treeList.append(node(value,weight,None,None,None,True))
     while (len(treeList) > 1):
+        print(treeList)
         sub1, sub2 = getTwoLowestNodes(treeList)
+        print(sub1.weight)
+        print(sub2.weight)
         treeList.remove(sub1)
         treeList.remove(sub2)
-        # create new subtree
-        if (sub1.weight <= sub2.weight):
-            new_internal = node(None,sub1.weight+sub2.weight,sub1,sub2,None,False)
-        else:
-            new_internal = node(None,sub1.weight+sub2.weight,sub2,sub1,None,False)
+        new_internal = node(None,sub1.weight+sub2.weight,sub1,sub2,None,False)
         treeList.append(new_internal)
         sub1.parent = new_internal
         sub2.parent = new_internal
@@ -42,24 +41,8 @@ def make_tree(freq):
 
 # return two nodes with the lowest weight
 def getTwoLowestNodes(nodeList):
-    tree1 = None
-    tree2 = None
-    for t in nodeList:
-        if tree1 is not None:
-            if (tree2 is None):
-                tree2 = t
-            else:
-                if (t.weight < tree1.weight):
-                    tree1 = t
-                else:
-                    if (t.weight < tree2.weight):
-                        tree2 = t
-        else:
-            tree1 = t
-    if (tree1.weight >= tree2.weight):
-        return tree1, tree2
-    else:
-        return tree2, tree1
+    sortedNodeList = sorted(nodeList, key=lambda x: x.weight, reverse=False)
+    return sortedNodeList[0],sortedNodeList[1]
 
 def make_mapping(tree):
     mapping = {}
@@ -77,10 +60,9 @@ def getLeafNodes(tree):
 # get code for a specific leaf node
 def followLeafGetCode(inNode):
     coding = ""
-    node = inNode
-    while node.parent is not None:
-        coding += node.getCode()
-        node = node.parent
+    while inNode.parent is not None:
+        coding += inNode.getCode()
+        inNode = inNode.parent
     return coding[::-1]
 
 def encode(mapping,text):
