@@ -56,7 +56,6 @@ def test_hashset_collision_detection():
     assert hashcontains(l, 1)
     assert hashcontains(l, 6)
 
-
 def test_hashset_insert_twice():
     l = [None] * 5
     hashinsert(l, 1)
@@ -64,20 +63,46 @@ def test_hashset_insert_twice():
     hashinsert(l, 1)
     assert hashcontains(l, 1)
 
+# insertion to full hashset failed, because while condition looped until element is None
+# therefore index out of bounds error
+def test_insert_to_full_hashset():
+    l = [1,2,3,4]
+    assert hashinsert(l,5)
+    assert hashcontains(l,5)
+
+def test_empty_hashset():
+    l = []
+    # hashcontains crashed for empty sets
+    assert hashcontains(l,1) == False
+    # no insertion to empty set
+    hashinsert(l,1)
+    assert l == []
 
 def hashinsert(l, value):
-    pos = value % len(l)
+    length = len(l)
+    if (length != 0):
+        pos = value % length
 
-    while l[pos] is not None:
-        pos += 1
-    l[pos] = value
-
+        while pos < length-1:
+            if(l[pos] is None):
+                break
+            else:
+                pos += 1
+        # override first hashed position if hashset is full
+        if((pos == length-1) & (l[pos] is None)):
+            l[pos] = value
+        else:
+            l[value%length] = value
 
 def hashcontains(l, value):
-    pos = value % len(l)
+    length = len(l)
+    if (length == 0):
+        return False
+    else:
+        pos = value % length
 
-    while l[pos] is not None:
-        if l[pos] == value:
-            return True
-        pos += 1
-    return False
+        while l[pos] is not None:
+            if l[pos] == value:
+                return True
+            pos += 1
+        return False
