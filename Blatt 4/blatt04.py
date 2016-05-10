@@ -1,32 +1,14 @@
 # Aufgabe 1 - Huffman Coding
 
-# komischerweise gehen die Tests nicht immer durch, habe wohl irgendeinen Zustand in make_tree
-# drin, so dass verschiedenes Verhalten für gleiche Parameter auftritt
+class node:
 
-class leaf_node:
-
-    type = "leaf"
-
-    def __init__(self,value,weight,parent):
+    def __init__(self,value,weight,left,right,parent,isLeaf):
         self.value = value
-        self.weight = weight
-        self.parent = parent
-
-    def getCode(self):
-        if (self.parent.left == self):
-            return "0"
-        else:
-            return "1"
-
-class internal_node:
-
-    type = "internal"
-
-    def __init__(self,weight,left,right,parent):
         self.weight = weight
         self.left = left
         self.right = right
         self.parent = parent
+        self.isLeaf = isLeaf
 
     def getCode(self):
         if (self.parent is not None):
@@ -42,16 +24,16 @@ def make_tree(freq):
     treeList = []
     # create leaf nodes
     for value, weight in freq.items():
-        treeList.append(leaf_node(value,weight,None))
+        treeList.append(node(value,weight,None,None,None,True))
     while (len(treeList) > 1):
         sub1, sub2 = getTwoLowestNodes(treeList)
         treeList.remove(sub1)
         treeList.remove(sub2)
         # create new subtree
         if (sub1.weight <= sub2.weight):
-            new_internal = internal_node(sub1.weight+sub2.weight,sub1,sub2,None)
+            new_internal = node(None,sub1.weight+sub2.weight,sub1,sub2,None,False)
         else:
-            new_internal = internal_node(sub1.weight+sub2.weight,sub2,sub1,None)
+            new_internal = node(None,sub1.weight+sub2.weight,sub2,sub1,None,False)
         treeList.append(new_internal)
         sub1.parent = new_internal
         sub2.parent = new_internal
@@ -87,7 +69,7 @@ def make_mapping(tree):
     return mapping
 
 def getLeafNodes(tree):
-    if (tree.type == "leaf"):
+    if (tree.isLeaf):
         return set([tree])
     else:
         return getLeafNodes(tree.left).union(getLeafNodes(tree.right))
@@ -115,7 +97,7 @@ def decode(tree,code):
     return text
 
 def getValueFromCode(tree,code):
-    if (tree.type == "leaf"):
+    if (tree.isLeaf):
         return tree.value, code
     else:
         if (code.replace(code[1:],'') == "1"):
