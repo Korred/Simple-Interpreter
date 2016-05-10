@@ -26,10 +26,7 @@ def make_tree(freq):
     for value, weight in freq.items():
         treeList.append(node(value,weight,None,None,None,True))
     while (len(treeList) > 1):
-        print(treeList)
         sub1, sub2 = getTwoLowestNodes(treeList)
-        print(sub1.weight)
-        print(sub2.weight)
         treeList.remove(sub1)
         treeList.remove(sub2)
         new_internal = node(None,sub1.weight+sub2.weight,sub1,sub2,None,False)
@@ -74,8 +71,9 @@ def encode(mapping,text):
 def decode(tree,code):
     text = ""
     for s in code:
-        value,code = getValueFromCode(tree,code)
-        text += value
+        if(len(code) != 0):
+            value,code = getValueFromCode(tree,code)
+            text += value
     return text
 
 def getValueFromCode(tree,code):
