@@ -56,25 +56,26 @@ def getLeafNodes(tree):
 
 # get code for a specific leaf node
 def followLeafGetCode(inNode):
-    coding = ""
+    coding = []
     while inNode.parent is not None:
-        coding += inNode.getCode()
+        coding.append(inNode.getCode())          # effizienter: liste erstellen mit den einzelnen Strings, dann .join verwenden
         inNode = inNode.parent
-    return coding[::-1]
+    string = "".join(coding)
+    return string[::-1]
 
 def encode(mapping,text):
-    code = ""
+    code = []
     for s in text:
-        code += mapping[s]
-    return code
+        code.append(mapping[s])
+    return "".join(code)
 
 def decode(tree,code):
-    text = ""
+    text = []
     for s in code:
         if(len(code) != 0):
             value,code = getValueFromCode(tree,code)
-            text += value
-    return text
+            text.append(value)
+    return "".join(text)
 
 def getValueFromCode(tree,code):
     if (tree.isLeaf):
