@@ -4,6 +4,7 @@
 import pygame
 import sys
 
+# lifestep seems to become slower over time...
 def lifestep(cells):
     "perform one life step for the current generation"
     nextGen = set([])
@@ -86,6 +87,8 @@ def main(cells):
             if e.type == pygame.QUIT:
                 pygame.quit()
                 return
+        # added fill to "reset" screen for next lifestep
+        bg.fill((0, 0, 0))
 
 def initScreen():
     pygame.init()
