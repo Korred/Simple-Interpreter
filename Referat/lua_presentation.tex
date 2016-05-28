@@ -1,0 +1,65 @@
+
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\begin{document}
+\title{Lua}   
+\date{1. Juni 2016} 
+
+\frame{\titlepage
+        \includegraphics[scale=0.5]{img/lua_logo.png}} 
+
+\frame{\frametitle{Lua} 
+\begin{itemize}
+    \item imperative Skriptsprache
+        \begin{itemize}
+            \item implementiert in Ansi-C
+            \item unterstützt funktionale und objektorientierte Programmierung
+        \end{itemize}
+    \item plattformunabhängig, wird in Bytecode übersetzt
+    \item sehr kleiner Interpreter (120KB), hohe Geschwindigkeit
+    \item LuaJIT
+    \item vorrangige Verwendung als eingebettete Sprache 
+\end{itemize}
+}
+
+\frame{\frametitle{Syntax-Besonderheiten} 
+\begin{itemize}
+    \item Datentypen
+        \begin{itemize}
+            \item nil, boolean, number, string, function, userdata und thread
+            \item einziger strukturierter Datentyp: table
+            \item eine Tabelle ist eine Menge von Key-Value Paaren
+            \item die Indizierung beginnt bei 1
+        \end{itemize}
+\end{itemize}
+}
+
+\frame{\frametitle{Syntax-Besonderheiten} 
+\begin{itemize}
+    \item Variablen
+        \begin{itemize}
+            \item sind nicht typgebunden, dynamische Zuweisung
+            \item globale Definition, außer mit Schlüsselwort \textbf{local}
+        \end{itemize}
+    \item Funktionen
+        \begin{itemize}
+            \item Schlüsselwort \textbf{function}
+            \item First-Class-Objekt
+            \item können während der Laufzeit dynamisch erzeugt und verändert werden
+        \end{itemize}
+\end{itemize}
+}
+
+\frame{\frametitle{Ist Lua eine dynamische Sprache?} 
+\begin{itemize}
+    \item dynamische Typisierung \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item Garbage Collection  \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item Objektorientierung \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item interaktiv \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item Reflexion/Introspektion \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item interpretiert \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item Latebound Everything \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+\end{itemize}
+}
+\end{document}
+
