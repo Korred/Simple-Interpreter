@@ -3,22 +3,33 @@
 \usepackage[utf8]{inputenc}
 \begin{document}
 \title{Lua}   
+\author{Philipp Kochanski, Joshua Schmidt}
 \date{1. Juni 2016} 
 
-\frame{\titlepage
-        \includegraphics[scale=0.5]{img/lua_logo.png}} 
+\frame{\hfill\includegraphics[scale=0.5]{img/lua_logo.png}
+       \titlepage} 
+
+\frame{\frametitle{Entstehung von Lua} 
+\begin{itemize}
+    \item entwickelt 1993 von der Computer Graphics Technology Group der Universität von Rio de Janeiro
+    \item DEL (data entry language)
+    \item Sol (Simple object language)
+    \item später: Kombination von DEL und Sol zu Lua
+\end{itemize}
+}
 
 \frame{\frametitle{Lua} 
 \begin{itemize}
     \item imperative Skriptsprache
         \begin{itemize}
             \item implementiert in Ansi-C
-            \item unterstützt funktionale und objektorientierte Programmierung
+            \item unterstützt funktionale Programmierung
+            \item Objektorientierung kann simuliert werden
         \end{itemize}
     \item plattformunabhängig, wird in Bytecode übersetzt
-    \item sehr kleiner Interpreter (120KB), hohe Geschwindigkeit
-    \item LuaJIT
     \item vorrangige Verwendung als eingebettete Sprache 
+    \item sehr kleiner Interpreter, hohe Geschwindigkeit 
+    \item LuaJIT
 \end{itemize}
 }
 
@@ -54,7 +65,7 @@
 \begin{itemize}
     \item dynamische Typisierung \hfill\includegraphics[scale=0.5]{img/correct.jpg}
     \item Garbage Collection  \hfill\includegraphics[scale=0.5]{img/correct.jpg}
-    \item Objektorientierung \hfill\includegraphics[scale=0.5]{img/correct.jpg}
+    \item Objektorientierung \hfill\includegraphics[scale=0.5]{img/incorrect.jpg}
     \item interaktiv \hfill\includegraphics[scale=0.5]{img/correct.jpg}
     \item Reflexion/Introspektion \hfill\includegraphics[scale=0.5]{img/correct.jpg}
     \item interpretiert \hfill\includegraphics[scale=0.5]{img/correct.jpg}
