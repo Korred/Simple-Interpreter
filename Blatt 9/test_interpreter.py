@@ -29,6 +29,10 @@ i = 12
     assert w_module.getvalue("j").value == 11
     assert w_module.getvalue("k").value == 10
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/master
 def test_if():
     ast = parse("""
 k = 10
@@ -44,6 +48,7 @@ else:
     assert w_module.getvalue("j").value == 11
     assert w_module.getvalue("k").value == 10
 
+<<<<<<< HEAD
 def test_custom_if():
     ast = parse("""
 if k:
@@ -58,6 +63,8 @@ else:
     assert w_module.getvalue("j") is None
     assert w_module.getvalue("k") is None
 
+=======
+>>>>>>> origin/master
 
 def test_def():
     ast = parse("""
