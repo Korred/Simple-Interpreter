@@ -24,6 +24,7 @@ class W_NormalObject(object):
         try:
             return self.attrs[name]
         except (KeyError, AttributeError):
+            return None
 
     def istrue(self):
         return True
@@ -44,4 +45,11 @@ class W_Integer(W_NormalObject):
         return self.value != 0
 
 class W_Method(W_NormalObject):
-    pass
+    def __init__(self, ast_method):
+        self.method = ast_method
+
+    def setvalue(obj, name, value):
+        pass
+
+    def getvalue(obj, name, value):
+        return None
