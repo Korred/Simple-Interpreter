@@ -1,7 +1,7 @@
 import py
 
 from simpleparser import parse
-from objmodel import W_NormalObject, W_Integer
+from objmodel import W_Integer, W_Method, W_NormalObject
 
 
 class Interpreter(object):
@@ -12,6 +12,7 @@ class Interpreter(object):
 
     def eval_Program(self, ast, w_context):
         print("### Evaluating program ###")
+        print(ast)
         res = None
         for s in ast.statements:
             res = self.eval(s, w_context)
@@ -29,10 +30,13 @@ class Interpreter(object):
 
     def eval_IfStatement(self, ast, w_context):
         # or if else statement instead of try/except
+        print("### Evaluating IFStatement ###")
+        print(ast)
         try:
             condition = self.eval(ast.condition, w_context).istrue()
         except AttributeError:
             condition = False
+        print(condition)
 
         if condition:
             return self.eval(ast.ifblock, w_context)
@@ -40,27 +44,37 @@ class Interpreter(object):
             return self.eval(ast.elseblock, w_context)
 
     def eval_MethodCall(self, ast, w_context):
+        print("### Evaluating MethodCall ###")
+        print(ast)
         if ast.receiver.__class__.__name__ == "ImplicitSelf":
-            return w_context.getvalue(ast.methodname)
+            m = w_context.getvalue(ast.methodname)
+            print(m.__class__.__name__)
+            if m.__class__.__name__ == "W_Method":
+                zipped_args = dict(zip(m.attrs["args"],ast.arguments))
+                m.attrs.update(zipped_args)
+                print(m.attrs)
+                res = self.eval(m.method, m)
+                print(res)
+
+                return res
+            elif m.__class__.__name__ == "IntLiteral":
+                res = self.eval(m, w_context)
+                return res
+            elif m.__class__.__name__ == "W_Integer":
+                return m
+        else:
+            # some stuff for handling other recievers than ImplicitSelf
+            pass
+        ### stuff to handle 
+        
 
     def eval_FunctionDefinition(self, ast, w_context):
-        print(ast.name)
-        print(ast.arguments)
-        print(ast.block)
+        print("### FunctionDef ###")
+        m = W_Method(ast.block)
+        m.setvalue("args", ast.arguments)
+        w_context.setvalue(ast.name, m)
 
-
-# for testing purposes
-ast = parse("""
-def f(x, y):
-    if x:
-        x
-    else:
-        y
-i = f(6, 3)
-j = f(0, 9)
-""")
-w_module = W_NormalObject()
-interpreter = Interpreter()
-interpreter.eval(ast, w_module)
-assert w_module.getvalue("i").value == 6
-assert w_module.getvalue("j").value == 9
+    def eval_ExprStatement(self, ast, w_context):
+        print("### Evaluating ExprStatement ###")
+        res = self.eval(ast.expression, w_context)
+        return res

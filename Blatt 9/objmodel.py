@@ -47,6 +47,7 @@ class W_Integer(W_NormalObject):
 class W_Method(W_NormalObject):
     def __init__(self, ast_method):
         self.method = ast_method
+        self.attrs = {}
 
     def setvalue(obj, name, value):
         pass
