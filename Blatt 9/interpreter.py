@@ -1,5 +1,5 @@
 import py
-
+import operator
 from simpleparser import parse
 from objmodel import W_Integer, W_Method, W_NormalObject
 
@@ -143,4 +143,31 @@ class Interpreter(object):
         w_context.setvalue(ast.name, o)
         res = self.eval(ast.block, o)
 
+        return res
+
+    def make_module(self):
+        return W_NormalObject()
+
+    def eval_NoneType(self, ast, w_context):
+        pass
+
+    def eval_PrimitiveMethodCall(self, ast, w_context):
+        if ast.methodname == "$int_add":
+            op = operator.add
+        elif ast.methodname == "$int_sub":
+            op = operator.sub
+        elif ast.methodname == "$int_mul":
+            op = operator.mul
+        elif ast.methodname == "$int_div":
+            op = operator.truediv
+        acc = 0
+        for e in ast.arguments:
+            acc = op(acc,self.eval(e,w_context).value)
+        return W_Integer(op(self.eval(ast.receiver,w_context).value,acc))
+
+    def eval_WhileStatement(self, ast, w_context):
+        res = None
+        while self.eval(ast.condition,w_context).istrue():
+            res = self.eval(ast.whileblock,w_context)
+        res = self.eval(ast.elseblock,w_context)
         return res
