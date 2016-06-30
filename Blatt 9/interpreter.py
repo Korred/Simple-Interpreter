@@ -154,19 +154,16 @@ class Interpreter(object):
     def eval_PrimitiveMethodCall(self, ast, w_context):
         if ast.methodname == "$int_add":
             op = operator.add
-            acc = 0
         elif ast.methodname == "$int_sub":
             op = operator.sub
-            acc = 0
         elif ast.methodname == "$int_mul":
             op = operator.mul
-            acc = 1
         elif ast.methodname == "$int_div":
             op = operator.truediv
-            acc = 0             # nooooooooooooo
+        acc = self.eval(ast.receiver,w_context).value
         for e in ast.arguments:
             acc = op(acc,self.eval(e,w_context).value)
-        return W_Integer(op(self.eval(ast.receiver,w_context).value,acc))
+        return W_Integer(acc)
 
     def eval_WhileStatement(self, ast, w_context):
         res = None
