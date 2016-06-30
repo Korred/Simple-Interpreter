@@ -142,9 +142,9 @@ class Interpreter(object):
         o = W_NormalObject({})
         w_context.setvalue(ast.name, o)
         res = self.eval(ast.block, o)
-
         return res
 
+    # by now we just create an empty W_NormalObject
     def make_module(self):
         return W_NormalObject()
 
@@ -154,13 +154,16 @@ class Interpreter(object):
     def eval_PrimitiveMethodCall(self, ast, w_context):
         if ast.methodname == "$int_add":
             op = operator.add
+            acc = 0
         elif ast.methodname == "$int_sub":
             op = operator.sub
+            acc = 0
         elif ast.methodname == "$int_mul":
             op = operator.mul
+            acc = 1
         elif ast.methodname == "$int_div":
             op = operator.truediv
-        acc = 0
+            acc = 0             # nooooooooooooo
         for e in ast.arguments:
             acc = op(acc,self.eval(e,w_context).value)
         return W_Integer(op(self.eval(ast.receiver,w_context).value,acc))

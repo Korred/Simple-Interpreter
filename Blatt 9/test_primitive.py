@@ -13,6 +13,24 @@ k = 10 $int_add(31)
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("k").value == 41
 
+def test_primitive_mul():
+    ast = parse("""
+k = 3 $int_mul(4,6)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("k").value == 72
+
+def test_primitive_div():
+    ast = parse("""
+k = 100 $int_div(10)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("k").value == 10
+
 
 def test_loop():
     ast = parse("""
