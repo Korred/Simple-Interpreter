@@ -147,10 +147,7 @@ class Interpreter(object):
     # by now we just create an empty W_NormalObject
     def make_module(self):
         return W_NormalObject()
-
-    def eval_NoneType(self, ast, w_context):
-        pass
-
+        
     def eval_PrimitiveMethodCall(self, ast, w_context):
         if ast.methodname == "$int_add":
             op = operator.add
@@ -167,7 +164,9 @@ class Interpreter(object):
 
     def eval_WhileStatement(self, ast, w_context):
         res = None
-        while self.eval(ast.condition,w_context).istrue():
-            res = self.eval(ast.whileblock,w_context)
-        res = self.eval(ast.elseblock,w_context)
+        if not self.eval(ast.condition,w_context).istrue():
+            res = self.eval(ast.elseblock,w_context)
+        else:    
+            while self.eval(ast.condition,w_context).istrue():
+                res = self.eval(ast.whileblock,w_context)
         return res
