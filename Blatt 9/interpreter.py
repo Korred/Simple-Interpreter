@@ -7,6 +7,7 @@ from objmodel import W_Integer, W_Method, W_NormalObject
 class Interpreter(object):
 
     def eval(self, ast, w_context):
+        print(w_context)
         method = getattr(self, "eval_" + ast.__class__.__name__)
         return method(ast, w_context)
 
@@ -25,7 +26,7 @@ class Interpreter(object):
         print(ast)
         res = self.eval(ast.expression, w_context)
         w_context.setvalue(ast.attrname, res)
-        print("ASSIGN", ast.attrname, w_context)
+        print("ASSIGN", ast.attrname, res)
         return res
 
     def eval_IntLiteral(self, ast, w_context):
@@ -47,7 +48,7 @@ class Interpreter(object):
 
         if condition:
             return self.eval(ast.ifblock, w_context)
-        else:
+        elif ast.elseblock:
             return self.eval(ast.elseblock, w_context)
 
     def eval_MethodCall(self, ast, w_context):
@@ -57,10 +58,24 @@ class Interpreter(object):
         if ast.receiver.__class__.__name__ == "ImplicitSelf":
             print("RECIEVER = IMPLICITSELF")
             print(w_context.attrs)
-            m = w_context.getvalue(ast.methodname)
-            print(m.__class__.__name__)
+            # get lookup order (C3 MRO)
+
+            print(ast.methodname)
+            print(w_context)
+            print("PARENTS", w_context.getparents())
+            print("PARENTS", w_context.parents)
+            print("MRO LIST ", w_context.getc3())
+
+            print("CHECKING MRO")
+            for i in w_context.getc3():
+                m = i.getvalue(ast.methodname)
+                if m:
+                    break
+
+            print("FOUND:", m.__class__.__name__)
             if m.__class__.__name__ == "W_Method":
                 m = m.clone()
+                print(m.attrs)
                 zipped_args = dict(zip(m.attrs["args"],ast.arguments))
                 m.attrs.update(zipped_args)
                 print(m.attrs)
@@ -84,34 +99,47 @@ class Interpreter(object):
             print(3,rec.attrs)
 
             # get method by methodname from reciever rec
-            m = rec.getvalue(ast.methodname)
-            m = m.clone()
+            print("CHECKING MRO")
+            for i in rec.getc3():
+                m = i.getvalue(ast.methodname)
+                if m:
+                    break
 
-            params = []
-            print("######################")
-            for p in ast.arguments:
-                # eval arguments as reciever later is different
-                print(p.__class__.__name__)
-                if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Method"]:
-                    params.append(p)
-                else:
-                    # it might be necessary to handle different edge cases here
-                    # or maybe not... should be tested accordingly
-                    res = self.eval(p, w_context)
-                    params.append(res)
-            print("params", params)
+            print("FOUND: ", m.__class__.__name__)
+            m = m.clone()
+            print("ARGUMENTS: ",ast.arguments)
+
+            if ast.arguments:
+                print("ARGUMENTS FOUND")
+                params = []
+                for p in ast.arguments:
+                    # eval arguments as reciever later is different
+                    print(p.__class__.__name__)
+                    if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Method"]:
+                        params.append(p)
+                    else:
+                        # it might be necessary to handle different edge cases here
+                        # or maybe not... should be tested accordingly
+                        res = self.eval(p, w_context)
+                        params.append(res)
+                print("params", params)
+
             # case where is a W_Method object
             if m.__class__.__name__ == "W_Method":
-                zipped_args = dict(zip(m.attrs["args"], params))
-                m.attrs.update(zipped_args)
-                print("X",m.attrs)
-                # I AM HERE 1
+                if ast.arguments:
+                    zipped_args = dict(zip(m.attrs["args"], params))
+                    m.attrs.update(zipped_args)
+                    print("X", m.attrs)
                 res = self.eval(m.method, m)
                 return res
+
+            elif m.__class__.__name__ == "W_Integer":
+                print(m)
+                return m
+
             else:
                 print("WHAT AN ELSE CASE HERE??")
-            
-            
+
 
 
 
@@ -125,29 +153,45 @@ class Interpreter(object):
         print(ast.block)
         m = W_Method(ast.block)
         m.setvalue("args", ast.arguments)
+        # Implicit Parent
+        m.setvalue("__parent__", w_context)
+
+        # Additional Parents
         print(m.attrs)
         w_context.setvalue(ast.name, m)
 
     def eval_ExprStatement(self, ast, w_context):
         print()
         print("### Evaluating ExprStatement ###")
-        print(1,ast)
-        print(2,w_context.attrs)
+        print(1, ast)
+        print(2, w_context.attrs)
         res = self.eval(ast.expression, w_context)
         return res
 
     def eval_ObjectDefinition(self, ast, w_context):
         print()
         print("### Evaluating ObjectDefinition ###")
-        o = W_NormalObject({})
+        print(ast)
+        o = W_NormalObject()
+        # Implicit Parent
+        o.setvalue("__parent__", w_context)
+        # set other parents
+        if ast.parentnames:
+            for i, p in enumerate(ast.parentnames):
+                eval_p = self.eval(ast.parentdefinitions[i], w_context)
+                o.setvalue(p, eval_p)
+                o.addparent(p)
+
+        # set object name
         w_context.setvalue(ast.name, o)
+        # set p1 and p2 if provided
         res = self.eval(ast.block, o)
         return res
 
     # by now we just create an empty W_NormalObject
     def make_module(self):
         return W_NormalObject()
-        
+
     def eval_PrimitiveMethodCall(self, ast, w_context):
         if ast.methodname == "$int_add":
             op = operator.add
@@ -157,16 +201,16 @@ class Interpreter(object):
             op = operator.mul
         elif ast.methodname == "$int_div":
             op = operator.truediv
-        acc = self.eval(ast.receiver,w_context).value
+        acc = self.eval(ast.receiver, w_context).value
         for e in ast.arguments:
-            acc = op(acc,self.eval(e,w_context).value)
+            acc = op(acc, self.eval(e, w_context).value)
         return W_Integer(acc)
 
     def eval_WhileStatement(self, ast, w_context):
         res = None
-        if not self.eval(ast.condition,w_context).istrue():
-            res = self.eval(ast.elseblock,w_context)
-        else:    
-            while self.eval(ast.condition,w_context).istrue():
-                res = self.eval(ast.whileblock,w_context)
+        if not self.eval(ast.condition, w_context).istrue():
+            res = self.eval(ast.elseblock, w_context)
+        else:
+            while self.eval(ast.condition, w_context).istrue():
+                res = self.eval(ast.whileblock, w_context)
         return res
