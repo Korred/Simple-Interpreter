@@ -6,6 +6,9 @@ from objmodel import W_Integer, W_Method, W_NormalObject
 
 class Interpreter(object):
 
+    def __init__(self,builtincode=None):
+        self.builtin = builtincode
+
     def eval(self, ast, w_context):
         print(w_context)
         method = getattr(self, "eval_" + ast.__class__.__name__)
@@ -56,7 +59,7 @@ class Interpreter(object):
         print("### Evaluating MethodCall ###")
         print(ast)
         if ast.receiver.__class__.__name__ == "ImplicitSelf":
-            print("RECIEVER = IMPLICITSELF")
+            print("RECEIVER = IMPLICITSELF")
             print(w_context.attrs)
             # get lookup order (C3 MRO)
 
@@ -91,14 +94,14 @@ class Interpreter(object):
             elif m.__class__.__name__ == "W_NormalObject":
                 return m
         else:
-            # different reciever of methodcall
-            print("RECIEVER =",ast.receiver.methodname)
-            # getting reciever from w_context
+            # different receiver of methodcall
+            print("RECEIVER =",ast.receiver.methodname)
+            # getting receiver from w_context
             rec = self.eval(ast.receiver,w_context)
             print(2,rec)
             print(3,rec.attrs)
 
-            # get method by methodname from reciever rec
+            # get method by methodname from receiver rec
             print("CHECKING MRO")
             for i in rec.getc3():
                 m = i.getvalue(ast.methodname)
@@ -113,7 +116,7 @@ class Interpreter(object):
                 print("ARGUMENTS FOUND")
                 params = []
                 for p in ast.arguments:
-                    # eval arguments as reciever later is different
+                    # eval arguments as receiver later is different
                     print(p.__class__.__name__)
                     if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Method"]:
                         params.append(p)
@@ -188,9 +191,18 @@ class Interpreter(object):
         res = self.eval(ast.block, o)
         return res
 
-    # by now we just create an empty W_NormalObject
     def make_module(self):
-        return W_NormalObject()
+        if self.builtin is None:
+            return W_NormalObject()
+        else:
+            # create builtin module
+            builtin_module = W_NormalObject()
+            # parse and eval builtin code
+            self.eval(parse(self.builtin),builtin_module)
+            # new module with the builtin module as its parent
+            w_module = W_NormalObject()
+            w_module.setvalue("__parent__", builtin_module)
+            return w_module
 
     def eval_PrimitiveMethodCall(self, ast, w_context):
         if ast.methodname == "$int_add":
