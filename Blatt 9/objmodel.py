@@ -52,6 +52,7 @@ class W_NormalObject(object):
 class W_Integer(W_NormalObject):
     def __init__(self, value):
         self.value = value
+        self.parent = None
 
     def setvalue(obj, name, value):
         pass  # or raise NotImplementedError()
@@ -64,6 +65,9 @@ class W_Integer(W_NormalObject):
 
     def clone(self):
         return W_Integer(self.value)
+
+    def getparents(self):
+        return [self.parent]
 
 class W_Method(W_NormalObject):
     def __init__(self, ast_method):

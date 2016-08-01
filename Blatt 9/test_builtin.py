@@ -3,6 +3,7 @@ import py
 from simpleparser import parse
 from objmodel import W_NormalObject
 from interpreter import Interpreter
+import pdb
 
 def test_builtin_simple():
     builtincode = """
@@ -45,7 +46,7 @@ object inttrait:
     # the parent of a normal module is the builtin module
     builtins = w_module.getparents()[0]
     inttrait = builtins.getvalue("inttrait")
-
+'''
     ast = parse("""
 x = 5 x # this returns 1, because it looks in the inttrait defined above
 m0 = 0 maybe_fortytwo
@@ -67,7 +68,7 @@ tr = inttrait
     assert w_module.getvalue("m0").value == 1
     assert w_module.getvalue("m1").value == 42
     assert w_module.getvalue("m2").value == 2
-
+'''
     
 def test_builtin_default():
     ast = parse("""
@@ -77,7 +78,7 @@ def sumupto(x):
         r = r add(x)
         x = x add(-1)
     r
-x = sumupto(100)
+x = sumupto(5)
 """)
     # the constructor is called without arguments, so the default builtins are
     # used
@@ -86,3 +87,23 @@ x = sumupto(100)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("x").value == 5050
+    print(w_module.getvalue("x").value)
+
+
+ast = parse("""
+def sumupto(x):
+    r = 0
+    while x:
+        r = r add(x)
+        x = x add(-1)
+    r
+x = sumupto(100)
+""")
+# the constructor is called without arguments, so the default builtins are
+# used
+interpreter = Interpreter()
+# test that the default inttrait defines a method ``add``
+w_module = interpreter.make_module()
+interpreter.eval(ast, w_module)
+assert w_module.getvalue("x").value == 5050
+print(w_module.getvalue("x").value)
