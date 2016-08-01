@@ -78,7 +78,7 @@ def sumupto(x):
         r = r add(x)
         x = x add(-1)
     r
-x = sumupto(5)
+x = sumupto(100)
 """)
     # the constructor is called without arguments, so the default builtins are
     # used
@@ -88,22 +88,3 @@ x = sumupto(5)
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("x").value == 5050
     print(w_module.getvalue("x").value)
-
-
-ast = parse("""
-def sumupto(x):
-    r = 0
-    while x:
-        r = r add(x)
-        x = x add(-1)
-    r
-x = sumupto(100)
-""")
-# the constructor is called without arguments, so the default builtins are
-# used
-interpreter = Interpreter()
-# test that the default inttrait defines a method ``add``
-w_module = interpreter.make_module()
-interpreter.eval(ast, w_module)
-assert w_module.getvalue("x").value == 5050
-print(w_module.getvalue("x").value)
