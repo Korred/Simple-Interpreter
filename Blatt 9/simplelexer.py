@@ -16,7 +16,11 @@ def any(*choices):
 def maybe(*choices):
     return group(*choices) + '?'
 
-Number = r'(([+-])?[1-9][0-9]*)|0'
+# Number = r'(([+-])?[1-9][0-9]*)|0'
+# replacing above Number regexp with one compatible with floats
+Number = r'(?<![\.\d])(([+-])?[1-9][0-9]*)(?![\.\d])|(?<![\.\d])0(?![\.\d])'
+Float = r'[-+]?([0-9]+[.][0-9]+)'
+
 
 # ' or " string.
 def make_single_string(delim):
@@ -58,7 +62,7 @@ Object = r'object'
 
 tokens = ["If", "Else", "While", "Def", "Object", "Number", "String", "Ignore",
           "Indent", "OpenBracket", "CloseBracket", "Comma", "Assign", "Colon",
-          "Name", "PrimitiveName"]
+          "Name", "PrimitiveName", "Float"]
 
 def make_lexer():
     lg = LexerGenerator()

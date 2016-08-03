@@ -10,7 +10,7 @@ from rply.token import Token
 from rply import ParserGenerator
 pg = ParserGenerator(["If", "Else", "While", "Def", "Object", "Number",
                       "String", "Name", "Indent", "Dedent", "Newline", "OpenBracket",
-                      "CloseBracket", "Comma", "Assign", "Colon", "PrimitiveName", "EOF"])
+                      "CloseBracket", "Comma", "Assign", "Colon", "PrimitiveName", "EOF", "Float"])
 
 def build_methodcall(call, cls):
     if len(call) == 1:
@@ -152,6 +152,10 @@ def msg_chain(cc):
 @pg.production("basic_expression : Number")
 def number_expression(stmt):
     return simpleast.IntLiteral(stmt[0].value)
+
+@pg.production("basic_expression : Float")
+def float_expression(stmt):
+    return simpleast.FloatLiteral(stmt[0].value)
 
 
 @pg.production("basic_expression : implicitselfmethodcall")

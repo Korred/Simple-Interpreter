@@ -1,4 +1,5 @@
 import py
+import re
 
 class MetaNode(type):
     def __init__(cls, name, bases, dict):
@@ -82,6 +83,17 @@ class IntLiteral(Expression):
     attrs = ["value"]
     def __init__(self, value):
         self.value = int(value)
+
+class FloatLiteral(Expression):
+    """ A float literal (like "0.1337") """
+    attrs = ["value"]
+    def __init__(self, value):
+        # some initial cleaning needed
+        # normalize cases of -0.0* and +0.0* to 0.0*
+        if re.match(r'[-+](0[.][0]+)',value):
+            value = value[1:]
+
+        self.value = float(value)
 
 class MethodCall(Expression):
     """ A call to a method with name 'methodname' on 'receiver' with

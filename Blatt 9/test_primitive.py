@@ -6,12 +6,14 @@ from interpreter import Interpreter
 
 def test_primitive():
     ast = parse("""
-k = 10 $int_add(31)
+a = 10 $int_add(31)
+b = 10 $int_add(10,10,10)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    assert w_module.getvalue("k").value == 41
+    assert w_module.getvalue("a").value == 41
+    assert w_module.getvalue("b").value == 40
 
 def test_primitive_mul():
     ast = parse("""
@@ -24,12 +26,15 @@ k = 3 $int_mul(4,6)
 
 def test_primitive_div():
     ast = parse("""
-k = 100 $int_div(10)
+a = 100 $int_div(10)
+b = 2 $int_div(4) # 0.5 but should be 0 as we are looking at ints
+
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    assert w_module.getvalue("k").value == 10
+    assert w_module.getvalue("a").value == 10
+    assert w_module.getvalue("b").value == 0
 
 
 def test_loop():

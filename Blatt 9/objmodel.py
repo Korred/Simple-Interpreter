@@ -57,7 +57,7 @@ class W_Integer(W_NormalObject):
     def setvalue(obj, name, value):
         pass  # or raise NotImplementedError()
 
-    def getvalue(self,name):
+    def getvalue(self, name):
         return None
 
     def istrue(self):
@@ -68,6 +68,28 @@ class W_Integer(W_NormalObject):
 
     def getparents(self):
         return [self.parent]
+
+
+class W_Float(W_NormalObject):
+    def __init__(self, value):
+        self.value = value
+        self.parent = None
+
+    def setvalue(obj, name, value):
+        pass  # or raise NotImplementedError()
+
+    def getvalue(self, name):
+        return None
+
+    def istrue(self):
+        return self.value != 0.0
+
+    def clone(self):
+        return W_Float(self.value)
+
+    def getparents(self):
+        return [self.parent]
+
 
 class W_Method(W_NormalObject):
     def __init__(self, ast_method):

@@ -46,7 +46,7 @@ object inttrait:
     # the parent of a normal module is the builtin module
     builtins = w_module.getparents()[0]
     inttrait = builtins.getvalue("inttrait")
-'''
+
     ast = parse("""
 x = 5 x # this returns 1, because it looks in the inttrait defined above
 m0 = 0 maybe_fortytwo
@@ -68,7 +68,7 @@ tr = inttrait
     assert w_module.getvalue("m0").value == 1
     assert w_module.getvalue("m1").value == 42
     assert w_module.getvalue("m2").value == 2
-'''
+
     
 def test_builtin_default():
     ast = parse("""
@@ -87,4 +87,3 @@ x = sumupto(100)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("x").value == 5050
-    print(w_module.getvalue("x").value)
