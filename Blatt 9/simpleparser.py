@@ -172,9 +172,13 @@ def float_expression(stmt):
     print("FLOAT Expression")
     return simpleast.FloatLiteral(stmt[0].value)
 
+@pg.production("basic_expression : ListOpenBracket ListCloseBracket")
 @pg.production("basic_expression : ListOpenBracket arguments ListCloseBracket ")
 def list_expression(args):
-    args = args[1]
+    if len(args) < 3:
+        args = None
+    else:
+        args = args[1]
     print("LIST ARGS",args)
     return simpleast.ListLiteral(args)
 

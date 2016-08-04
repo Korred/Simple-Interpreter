@@ -30,14 +30,6 @@ def make_single_string(delim):
 
 String = group(make_single_string(r"\'"), make_single_string(r'\"'))
 
-# Lists PROTOTYPE IDEA #############################
-
-StrList = None
-IntList = r'\[(({0}),)*({0})\]'.format(Number)
-FltList = r'\[(({0}),)*({0})\]'.format(Float)
-####################################################
-
-
 # ____________________________________________________________
 # Ignored
 
@@ -60,13 +52,11 @@ Assign = r'\='
 OpenBracket = r'[\(]'
 CloseBracket = r'[\)]'
 
-# PROTOTYPE IDEA ############################
 ListOpenBracket = r'[\[]'
 ListCloseBracket = r'[\]]'
 
 MapOpenBracket = r'[\{]'
 MapCloseBracket = r'[\}]'
-#############################################
 
 If = r'if'
 Else = r'else'

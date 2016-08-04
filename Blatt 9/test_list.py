@@ -56,3 +56,9 @@ def test_list_simple_primitive():
     res = Program([ExprStatement(PrimitiveMethodCall(ListLiteral([IntLiteral(1)]), '$add', [IntLiteral(2)]))])
 
     assert ast == res
+
+def test_list_empty():
+    ast = parse ("[]")
+    res = Program([ExprStatement(ListLiteral([]))])
+
+    assert ast == res
