@@ -10,9 +10,11 @@ from rply.token import Token
 from rply import ParserGenerator
 pg = ParserGenerator(["If", "Else", "While", "Def", "Object", "Number",
                       "String", "Name", "Indent", "Dedent", "Newline", "OpenBracket",
-                      "CloseBracket", "Comma", "Assign", "Colon", "PrimitiveName", "EOF", "Float"])
+                      "CloseBracket", "Comma", "Assign", "Colon", "PrimitiveName", "EOF", "Float",
+                      "ListOpenBracket", "ListCloseBracket", "MapOpenBracket", "MapCloseBracket"])
 
 def build_methodcall(call, cls):
+    print("BUILD METHODCALL")
     if len(call) == 1:
         args = []
     else:
@@ -24,6 +26,7 @@ def build_methodcall(call, cls):
 @pg.production("program : statements EOF")
 @pg.production("program : statements newlines EOF")
 def program(prog):
+    print("PROGRAM",prog)
     # import pdb; pdb.set_trace()
     if prog[0] is None:
         prog = prog[1]
@@ -36,6 +39,7 @@ def program(prog):
 @pg.production("statements : newlines statements")
 # @pg.production("statements : newlines statement statements")
 def statements(stmts):
+    print("STATEMENTS",stmts)
     if len(stmts) == 1:
         stmt = stmts[0]
         return simpleast.Program([stmt])
@@ -60,12 +64,14 @@ def newlines(n):
 @pg.production("statement : defstatement")
 @pg.production("statement : objectstatement")
 def statement(stmt):
+    print("Statement")
     return stmt[0]
 
 
 @pg.production("ifstatement : If expression block")
 @pg.production("ifstatement : If expression block Else block")
 def ifstatement(ifstmt):
+    print("IF")
     elseblock = None
     if len(ifstmt) > 3:
         elseblock = ifstmt[-1]
@@ -74,12 +80,14 @@ def ifstatement(ifstmt):
 
 @pg.production("whilestatement : While expression block")
 def ifstatement(whilestmt):
+    print("while")
     return simpleast.WhileStatement(whilestmt[1], whilestmt[2])
 
 
 @pg.production("objectstatement : Object name block")
 @pg.production("objectstatement : Object name parentlist block")
 def objectstatement(obj):
+    print("OBJ Statement")
     name = obj[1]
     names = []
     expressions = []
@@ -96,6 +104,7 @@ def objectstatement(obj):
 @pg.production("defstatement : Def name argumentnamelist block")
 @pg.production("defstatement : Def name block")
 def defstatement(defn):
+    print("DEF Statement")
     name = defn[1]
     if len(defn) == 4:
         args = defn[2]
@@ -108,12 +117,14 @@ def defstatement(defn):
 
 @pg.production("block : Colon Newline Indent statements Dedent")
 def block(blk):
+    print("BLOCK")
     return blk[3]
 
 
 @pg.production("simplestatement : expression Newline")
 @pg.production("simplestatement : expression Assign expression Newline")
 def simplestatement(stmts):
+    print("SIMPLE Statement")
     if len(stmts) == 2:
         return simpleast.ExprStatement(stmts[0])
     # assignement
@@ -132,6 +143,7 @@ def simplestatement(stmts):
 @pg.production("expression : basic_expression")
 @pg.production("expression : basic_expression msg-chain")
 def expression(expr):
+    print("Expression")
     if len(expr) > 1:
         prev = expr[0]
         for i in expr[1]:
@@ -144,6 +156,7 @@ def expression(expr):
 @pg.production("msg-chain : methodcall")
 @pg.production("msg-chain : methodcall msg-chain")
 def msg_chain(cc):
+    print("MSG-CHAIN")
     if len(cc) > 1:
         return [cc[0]]+cc[1]
     return cc
@@ -151,36 +164,50 @@ def msg_chain(cc):
 
 @pg.production("basic_expression : Number")
 def number_expression(stmt):
+    print("INT Expression")
     return simpleast.IntLiteral(stmt[0].value)
 
 @pg.production("basic_expression : Float")
 def float_expression(stmt):
+    print("FLOAT Expression")
     return simpleast.FloatLiteral(stmt[0].value)
+
+@pg.production("basic_expression : ListOpenBracket arguments ListCloseBracket ")
+def list_expression(args):
+    args = args[1]
+    print("LIST ARGS",args)
+    return simpleast.ListLiteral(args)
+
 
 
 @pg.production("basic_expression : implicitselfmethodcall")
 def implicitselfmethodcall(call):
+    print("Implicitself MethodCall")
     methodcall = call[0]
     methodcall.receiver = simpleast.ImplicitSelf()
     return methodcall
 
 @pg.production("implicitselfmethodcall : methodcall")
 def implicitselfmethodcall_methodcall(call):
+    print("Implicitself MethodCall MethodCall")
     return call[0]
 
 @pg.production("methodcall : primitivemethodcall")
 @pg.production("methodcall : simplemethodcall")
 def methodcall(call):
+    print("MethodCall")
     return call[0]
 
 @pg.production("simplemethodcall : name")
 @pg.production("simplemethodcall : name argumentslist")
 def simplemethodcall(call):
+    print("Simple MethodCall")
     return build_methodcall(call, simpleast.MethodCall)
 
 @pg.production("primitivemethodcall : primitivename")
 @pg.production("primitivemethodcall : primitivename argumentslist")
 def primitivemethodcall(call):
+    print("Primitive MethodCall")
     return build_methodcall(call, simpleast.PrimitiveMethodCall)
 
 
@@ -188,6 +215,7 @@ def primitivemethodcall(call):
 @pg.production("argumentnamelist : OpenBracket argumentnames CloseBracket")
 @pg.production("parentlist : OpenBracket parentdefinitions CloseBracket")
 def argumentslist(args):
+    print("ARGUMENTLIST")
     return args[1]
 
 
@@ -201,6 +229,7 @@ def argumentslist(args):
 @pg.production("parentdefinitions : assignment Comma")
 @pg.production("parentdefinitions : assignment Comma parentdefinitions")
 def arguments(args):
+    print("ARGUMENTS")
     if len(args) == 3:
         return [args[0]] + args[2]
     return [args[0]]
@@ -208,13 +237,16 @@ def arguments(args):
 
 @pg.production("assignment : name Assign expression")
 def assignement(args):
+    print("Assignment")
     return simpleast.Assignment(None, args[0], args[2])
 
 
 @pg.production("primitivename : PrimitiveName")
 @pg.production("name : Name")
 def name(name):
+    print("NAME")
     return name[0].value
+
 
 @pg.error
 def error_handler(token):
@@ -237,7 +269,8 @@ print_conflicts()
 
 def parse(s):
     l = lex(s)
-    print(l)
+    print("Starting Parser on: ", l)
+    #import pdb; pdb.set_trace()
     return parser.parse(iter(l))
 
 # ____________________________________________________________
@@ -306,6 +339,7 @@ def combine_errors(self, other):
                             self.customerror or other.customerror)
 
 def make_arglist(methodname):
+    print("MAKE ARGLIST")
     def arglist(self):
         self.match("OpenBracket", "(")
         method = getattr(self, methodname)

@@ -28,11 +28,17 @@ def make_single_string(delim):
     return "".join([delim, normal_chars,
                     any(r"\\." + normal_chars), delim])
 
-String = group(make_single_string(r"\'"),
-                     make_single_string(r'\"'))
+String = group(make_single_string(r"\'"), make_single_string(r'\"'))
+
+# Lists PROTOTYPE IDEA #############################
+
+StrList = None
+IntList = r'\[(({0}),)*({0})\]'.format(Number)
+FltList = r'\[(({0}),)*({0})\]'.format(Float)
+####################################################
 
 
-#____________________________________________________________
+# ____________________________________________________________
 # Ignored
 
 Whitespace = r'[ \f\t]'
@@ -42,7 +48,7 @@ Comment = r'#[^\r\n]*'
 Indent = Newline + any(Whitespace)
 Ignore = group(Whitespace + '+', Linecontinue, Comment)
 
-#____________________________________________________________
+# ____________________________________________________________
 
 Name = r'[a-zA-Z_][a-zA-Z0-9_]*'
 PrimitiveName = '\\$' + Name
@@ -51,8 +57,16 @@ Colon = r'\:'
 Comma = r'\,'
 Assign = r'\='
 
-OpenBracket = r'[\[\(\{]'
-CloseBracket = r'[\]\)\}]'
+OpenBracket = r'[\(]'
+CloseBracket = r'[\)]'
+
+# PROTOTYPE IDEA ############################
+ListOpenBracket = r'[\[]'
+ListCloseBracket = r'[\]]'
+
+MapOpenBracket = r'[\{]'
+MapCloseBracket = r'[\}]'
+#############################################
 
 If = r'if'
 Else = r'else'
@@ -62,7 +76,8 @@ Object = r'object'
 
 tokens = ["If", "Else", "While", "Def", "Object", "Number", "String", "Ignore",
           "Indent", "OpenBracket", "CloseBracket", "Comma", "Assign", "Colon",
-          "Name", "PrimitiveName", "Float"]
+          "Name", "PrimitiveName", "Float", "ListOpenBracket", "ListCloseBracket", 
+          "MapOpenBracket", "MapCloseBracket"]
 
 def make_lexer():
     lg = LexerGenerator()

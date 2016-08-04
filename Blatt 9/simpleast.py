@@ -95,6 +95,20 @@ class FloatLiteral(Expression):
 
         self.value = float(value)
 
+
+class ListLiteral(Expression):
+    """ A list like [1,2,3,4]
+    Elements are IntLiteral(1), IntLiteral(2) etc...
+    """
+
+    attrs = ["elements"]
+    def __init__(self, elements=None):
+        if elements is None:
+            elements = []
+        self.elements = elements
+
+
+
 class MethodCall(Expression):
     """ A call to a method with name 'methodname' on 'receiver' with
     'arguments' (which is a list of expression ASTs).

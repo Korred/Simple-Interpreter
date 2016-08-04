@@ -26,7 +26,6 @@ object floattrait:
 
 	def div(x):
 		self $float_div(x)
-	
 
 
 def to_int(x):
