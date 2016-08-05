@@ -1,7 +1,7 @@
 import py
 import operator
 from simpleparser import parse
-from objmodel import W_Integer, W_Method, W_NormalObject, W_Float
+from objmodel import W_Integer, W_Method, W_NormalObject, W_Float, W_List
 import default_builtins
 import pdb
 from math import floor, ceil
@@ -42,6 +42,7 @@ class Interpreter(object):
         print()
         print("### Evaluating IntLiteral ###")
         print(W_Integer(ast.value).value)
+        print(ast)
         res = W_Integer(ast.value)
         for i in w_context.getc3():
             ctx = i.getvalue("inttrait")
@@ -101,7 +102,7 @@ class Interpreter(object):
                 if m:
                     break
 
-            print("FOUND:", m.__class__.__name__, " in ",i)
+            print("FOUND:", m.__class__.__name__, "in",i)
             if m.__class__.__name__ == "W_Method":
                 m = m.clone()
                 print("METHOD ATTRS: ", m.attrs)
@@ -129,9 +130,13 @@ class Interpreter(object):
                 return m
             elif m.__class__.__name__ == "W_NormalObject":
                 return m
+
+            elif m.__class__.__name__ == "W_List":
+                print(m.elements)
+                return m
         else:
             # different receiver of methodcall
-            print(ast.receiver.__class__.__name__)
+            print("REC:", ast.receiver.__class__.__name__)
             rec = self.eval(ast.receiver, w_context)
             # eval reciever object
 
@@ -220,6 +225,72 @@ class Interpreter(object):
                 elif m.__class__.__name__ == "W_Integer":
                     print(m,m.value)
                     return m
+
+                elif m.__class__.__name__ == "W_Float":
+                    print(m,m.value)
+                    return m
+
+
+
+            if rec.__class__.__name__ == "W_List":
+                print("REC:", ast.receiver)
+                print("METHODNAME:", ast.methodname)
+                print("CHECKING MRO")
+                for i in w_context.getc3():
+                    ctx = i.getvalue("listtrait")
+                    if ctx:
+                        break
+                print("LISTTRAIT:", ctx)
+
+                # m = method stored in listtrait
+                m = ctx.getvalue(ast.methodname)
+                print(m)
+
+                if ast.arguments:
+                    print("ARGUMENTS FOUND")
+                    params = []
+                    for p in ast.arguments:
+                        # eval arguments as receiver later is different
+                        print(p.__class__.__name__)
+                        # check whether W_Method can be reached here
+                        # should include strings maybe
+                        if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Float", "W_Method"]:
+                            params.append(p)
+                        else:
+                            # it might be necessary to handle different edge cases here
+                            # or maybe not... should be tested accordingly
+                            res = self.eval(p, w_context)
+                            params.append(res)
+                    print("params", params)
+
+
+                # case where m is a W_Method object
+                if m.__class__.__name__ == "W_Method":
+                    m.setvalue("self", rec)
+                    if ast.arguments:
+                        zipped_args = dict(zip(m.attrs["args"], params))
+                        m.attrs.update(zipped_args)
+                        print("X", m.attrs)
+                    res = self.eval(m.method, m)
+                    return res
+
+                elif m.__class__.__name__ == "W_Integer":
+                    print(m,m.value)
+                    return m
+
+                elif m.__class__.__name__ == "W_Float":
+                    print(m,m.value)
+                    return m
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -338,11 +409,23 @@ class Interpreter(object):
             return w_module
 
     def eval_PrimitiveMethodCall(self, ast, w_context):
+        print()
+        print("### Evaluating PrimitiveMethodCall ###")
+
+        if ast.methodname == "$list_add":
+            print("AST:", ast)
+            l = self.eval(ast.receiver, w_context)
+            print(l)
+            print(ast.arguments[0])
+            param = self.eval(ast.arguments[0], w_context)
+            l.addelement(param)
+
+
 
 
         # ceil/floor logic
         if ast.methodname in ("$ceil", "$floor"):
-            print("AST:",ast)
+            print("AST:", ast)
             print(ast.arguments[0])
             param = self.eval(ast.arguments[0], w_context)
             print(param)
@@ -359,43 +442,43 @@ class Interpreter(object):
                     return W_Integer(ceil(val))
 
 
-
+        if "int" in ast.methodname or "float" in ast.methodname:
         # Flags necessary to decide whether to return a float or an int
-        l = self.eval(ast.receiver, w_context)
-        l_flag = False
-        r_flag = False
-        if l.__class__.__name__ == "W_Float":
-            l_flag = True
-        l = l.value
+            l = self.eval(ast.receiver, w_context)
+            l_flag = False
+            r_flag = False
+            if l.__class__.__name__ == "W_Float":
+                l_flag = True
+            l = l.value
 
 
-        # add/sub/mul/div logic
-        if ast.methodname in ("$int_add", "$float_add"):
-            op = operator.add
-        elif ast.methodname in ("$int_sub", "$float_sub"):
-            op = operator.sub
-        elif ast.methodname in ("$int_mul", "$float_mul"):
-            op = operator.mul
-        elif ast.methodname in ("$int_div", "$float_div"):
-            op = operator.truediv
+            # add/sub/mul/div logic
+            if ast.methodname in ("$int_add", "$float_add"):
+                op = operator.add
+            elif ast.methodname in ("$int_sub", "$float_sub"):
+                op = operator.sub
+            elif ast.methodname in ("$int_mul", "$float_mul"):
+                op = operator.mul
+            elif ast.methodname in ("$int_div", "$float_div"):
+                op = operator.truediv
 
-        
-        # Flags necessary to decide whether to return a float or an int
+            
+            # Flags necessary to decide whether to return a float or an int
 
 
-        for e in ast.arguments:
-            r = self.eval(e, w_context)
-            if r.__class__.__name__ == "W_Float":
-                r_flag = True
+            for e in ast.arguments:
+                r = self.eval(e, w_context)
+                if r.__class__.__name__ == "W_Float":
+                    r_flag = True
 
-            r = r.value
-            l = op(l, r)
+                r = r.value
+                l = op(l, r)
 
-        if l_flag or r_flag:
-            print (l)
-            return W_Float(l)
-        else:
-            return W_Integer(int(l))
+            if l_flag or r_flag:
+                print (l)
+                return W_Float(l)
+            else:
+                return W_Integer(int(l))
 
     def eval_WhileStatement(self, ast, w_context):
         res = None
@@ -408,3 +491,21 @@ class Interpreter(object):
 
     def eval_ImplicitSelf(self, ast, w_context):
         return w_context
+
+    def eval_ListLiteral(self, ast, w_context):
+        print("\n### Evaluating ListLiteral ###")
+        print(ast.elements)
+        res = []
+        for e in ast.elements:
+            part = self.eval(e, w_context)
+            res.append(part)
+        res = W_List(res)
+
+        for i in w_context.getc3():
+            ctx = i.getvalue("listtrait")
+            if ctx:
+                break
+        res.parent = ctx
+        print(res)
+
+        return res

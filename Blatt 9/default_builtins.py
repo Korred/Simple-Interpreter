@@ -27,6 +27,26 @@ object floattrait:
 	def div(x):
 		self $float_div(x)
 
+object listtrait:
+	def add(x):
+		self $list_add(x)
+
+	def del(x):
+		self $list_del(x)
+
+	def get(x):
+		self $list_get(x)
+
+	def len:
+		self $list_len
+
+	def append(x):
+		l = x len
+		while l:
+			c = x get(0)
+			self add(c)
+			l = l sub(1)
+
 
 def to_int(x):
 	$to_int(x)

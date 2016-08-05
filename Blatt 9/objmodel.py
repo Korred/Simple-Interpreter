@@ -91,6 +91,39 @@ class W_Float(W_NormalObject):
         return [self.parent]
 
 
+class W_List(W_NormalObject):
+    def __init__(self, elements):
+        if elements is None:
+            elements = []
+        self.elements = elements
+        self.parent = None
+        self.length = len(elements)
+
+    def getelement(self, index):
+        return self.elements[index]
+
+    def addelement(self, element):
+        self.elements.append(element)
+
+    def istrue(self):
+        return self.length != 0
+
+    def delelement(self, index):
+        try:
+            self.elements.pop(index)
+            self.length -= 1
+        except IndexError:
+            raise IndexError("Provided Index does not exist!")
+
+    def clone(self):
+        return W_List(self.elements)
+
+    def getparents(self):
+        return [self.parent]
+
+
+
+
 class W_Method(W_NormalObject):
     def __init__(self, ast_method):
         self.method = ast_method
