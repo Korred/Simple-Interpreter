@@ -121,8 +121,81 @@ def test_list_i_add():
     ast = parse("""
 a = []
 a add(1)
+a add([1])
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("a").elements[0].value == 1
+    assert w_module.getvalue("a").elements[1].elements[0].value == 1
+
+
+def test_list_i_del():
+    ast = parse("""
+a = [1,2,3]
+b = [1,2,3]
+c = [1,2,3]
+a del(0) #first
+b del(1) #middle
+c del(2) #last
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert [e.value for e in w_module.getvalue("a").elements] == [2,3]
+    assert [e.value for e in w_module.getvalue("b").elements] == [1,3]
+    assert [e.value for e in w_module.getvalue("c").elements] == [1,2]
+    assert w_module.getvalue("a").length == w_module.getvalue("b").length == w_module.getvalue("c").length == 2
+
+
+def test_list_i_append():
+    ast = parse("""
+a = [1,2]
+b = [3,4]
+c = a append(b)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    for i in range(4):
+        assert w_module.getvalue("c").elements[i].value == i+1
+
+
+def test_list_i_range():
+    ast = parse("""
+s = s_range(5)
+e = e_range(5,10)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    for i in range(5):
+        assert w_module.getvalue("s").elements[i].value == i
+    for i in range(5,10):
+        assert w_module.getvalue("e").elements[i-5].value == i
+
+def test_list_i_fibonacci():
+    ast = parse("""
+f = fibonacci_iter(6)
+
+def fib_list(x):
+    r = []
+    i = 0
+    k = x add(1)
+
+    while k:
+        f = fibonacci_iter(i)
+        r add(f)
+        i = i add(1)
+        k = k sub(1)
+    r
+
+l = fib_list(6)
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("f").value == 8
+    assert [e.value for e in w_module.getvalue("l").elements] == [0,1,1,2,3,5,8]

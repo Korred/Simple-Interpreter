@@ -1,20 +1,27 @@
+# AST Definitions (Nodes)
+# Follows PEP 8 but ignores E501 (line too long)
+
 import py
 import re
+
 
 class MetaNode(type):
     def __init__(cls, name, bases, dict):
         compile_name = "compile_" + name
         abstract = not hasattr(cls, "attrs")
+
         def dispatch(self, compiler):
             if not abstract:
                 getattr(compiler, compile_name)(self)
         cls.dispatch = dispatch
+
 
 class AstNode(object):
     __metaclass__ = MetaNode
 
     """ Base class for all ast nodes. Provides generic functionality."""
     tokens = None
+
     def __repr__(self):
         return "%s(%s)" % (self.__class__.__name__,
                 ", ".join([repr(getattr(self, a)) for a in self.attrs]))
@@ -56,7 +63,8 @@ class AstNode(object):
                     uid(self), uid(obj), key))
             else:
                 body.append("%s = %s" % (key, obj))
-        result.append("o%s [label=\"%s\", shape=box]" % (uid(self), repr("\n".join(body))[1:-1]))
+        result.append("o%s [label=\"%s\", shape=box]" % (uid(self),
+                      repr("\n".join(body))[1:-1]))
         for child in children:
             child.dot(result)
         return result

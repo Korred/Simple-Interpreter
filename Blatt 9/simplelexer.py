@@ -1,7 +1,9 @@
+# simple Python-like lexer
+# Follows PEP 8 but ignores E501 (line too long)
+
 from rply import LexerGenerator
 from rply.token import Token
 
-# attempts at writing a simple Python-like lexer
 
 def group(*choices, **namegroup):
     choices = list(choices)
@@ -9,15 +11,17 @@ def group(*choices, **namegroup):
         choices.append("(?P<%s>%s)" % (name, value))
     return '(' + '|'.join(choices) + ')'
 
+
 def any(*choices):
     result = group(*choices) + '*'
     return result
 
+
 def maybe(*choices):
     return group(*choices) + '?'
 
-# Number = r'(([+-])?[1-9][0-9]*)|0'
-# replacing above Number regexp with one compatible with floats
+# Regex to select different tokens
+
 Number = r'(?<![\.\d])(([+-])?[1-9][0-9]*)(?![\.\d])|(?<![\.\d])0(?![\.\d])'
 Float = r'[-+]?([0-9]+[.][0-9]+)'
 
@@ -31,7 +35,7 @@ def make_single_string(delim):
 String = group(make_single_string(r"\'"), make_single_string(r'\"'))
 
 # ____________________________________________________________
-# Ignored
+# Stuff that should be ignored - stored as Ignore Token...
 
 Whitespace = r'[ \f\t]'
 Newline = r'\r?\n'
@@ -49,12 +53,15 @@ Colon = r'\:'
 Comma = r'\,'
 Assign = r'\='
 
+# ( and ) token
 OpenBracket = r'[\(]'
 CloseBracket = r'[\)]'
 
+# [ and ] token for lists/arrays
 ListOpenBracket = r'[\[]'
 ListCloseBracket = r'[\]]'
 
+# { and } token for dicts/maps
 MapOpenBracket = r'[\{]'
 MapCloseBracket = r'[\}]'
 
@@ -64,10 +71,13 @@ While = r'while'
 Def = r'def'
 Object = r'object'
 
-tokens = ["If", "Else", "While", "Def", "Object", "Number", "String", "Ignore",
-          "Indent", "OpenBracket", "CloseBracket", "Comma", "Assign", "Colon",
-          "Name", "PrimitiveName", "Float", "ListOpenBracket", "ListCloseBracket", 
+# Tokens used in parser rules
+tokens = ["If", "Else", "While", "Def", "Object",
+          "Number", "String", "Ignore", "Indent", "OpenBracket",
+          "CloseBracket", "Comma", "Assign", "Colon", "Name",
+          "PrimitiveName", "Float", "ListOpenBracket", "ListCloseBracket",
           "MapOpenBracket", "MapCloseBracket"]
+
 
 def make_lexer():
     lg = LexerGenerator()
@@ -79,6 +89,7 @@ def make_lexer():
 lexer = make_lexer()
 
 tabsize = 4
+
 
 def postprocess(tokens, source):
     parenthesis_level = 0
@@ -97,7 +108,7 @@ def postprocess(tokens, source):
                 raise LexerError(source, token.source_pos, "unmatched parenthesis")
             output_tokens.append(token)
         elif token.name == "Indent":
-            if i+1 < len(tokens) and tokens[i+1].name == "Indent":
+            if i + 1 < len(tokens) and tokens[i + 1].name == "Indent":
                 continue
             if parenthesis_level == 0:
                 s = token.value
@@ -111,7 +122,8 @@ def postprocess(tokens, source):
                 else:
                     pos = 2
                     start = 2
-                while pos < length:  # count the indentation depth of the whitespace
+                # count the indentation depth of the whitespace
+                while pos < length:
                     c = s[pos]
                     if c == ' ':
                         column = column + 1
@@ -120,10 +132,10 @@ def postprocess(tokens, source):
                     elif c == '\f':
                         column = 0
                     pos = pos + 1
-                # split the token in two: one for the newline and one for the 
+                # split the token in two: one for the newline and one for the
                 # in/dedent
                 output_tokens.append(Token("Newline", s[:start], token.source_pos))
-                if column > indentation_levels[-1]: # count indents or dedents
+                if column > indentation_levels[-1]:  # count indents or dedents
                     indentation_levels.append(column)
                     token.name = "Indent"
                     token.value = s[start:]
@@ -136,8 +148,7 @@ def postprocess(tokens, source):
                     while column < indentation_levels[-1]:
                         dedented = True
                         indentation_levels.pop()
-                        output_tokens.append(Token("Dedent", "",
-                                                   token.source_pos)) 
+                        output_tokens.append(Token("Dedent", "", token.source_pos)) 
                     if dedented:
                         token.name = "Dedent"
                         token.value = s[start:]
@@ -146,12 +157,13 @@ def postprocess(tokens, source):
                         token.source_pos.colno = 0
                         output_tokens[-1] = token
             else:
-                pass # implicit line-continuations within parenthesis
+                pass  # implicit line-continuations within parenthesis
         else:
             output_tokens.append(token)
     if token is not None:
         output_tokens.append(Token("EOF", "", token.source_pos))
     return output_tokens
+
 
 def lex(s):
     if not s.endswith('\n'):

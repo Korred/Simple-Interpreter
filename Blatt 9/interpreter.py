@@ -420,6 +420,23 @@ class Interpreter(object):
             param = self.eval(ast.arguments[0], w_context)
             l.addelement(param)
 
+        if ast.methodname == "$list_del":
+            print("AST:", ast)
+            l = self.eval(ast.receiver, w_context)
+            print(l)
+            print(ast.arguments[0])
+            param = self.eval(ast.arguments[0], w_context).value
+            l.delelement(param)
+
+        if ast.methodname == "$list_len":
+            l = self.eval(ast.receiver, w_context)
+            return W_Integer(l.length)
+
+        if ast.methodname == "$list_get":
+            l = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context).value
+            return l.getelement(param)
+
 
 
 
@@ -481,9 +498,10 @@ class Interpreter(object):
                 return W_Integer(int(l))
 
     def eval_WhileStatement(self, ast, w_context):
+        print("EVAL WHILE")
         res = None
         if not self.eval(ast.condition, w_context).istrue():
-            res = self.eval(ast.elseblock, w_context)
+            pass
         else:
             while self.eval(ast.condition, w_context).istrue():
                 res = self.eval(ast.whileblock, w_context)
