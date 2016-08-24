@@ -103,6 +103,20 @@ class FloatLiteral(Expression):
 
         self.value = float(value)
 
+class StringLiteral(Expression):
+    """ A string literal like "abc" """
+    attrs = ["value"]
+    def __init__(self, value):
+        self.value = value[1:-1]    # cut off quotes, otherwise we'd have double quoted strings
+
+class KeyValueLiteral(Expression):
+    """ A tuple of key and value used in dictionarys like "a":1
+    """
+    
+    attrs = ["key","value"]
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
 
 class ListLiteral(Expression):
     """ A list like [1,2,3,4]
@@ -115,6 +129,16 @@ class ListLiteral(Expression):
             elements = []
         self.elements = elements
 
+class DictLiteral(Expression):
+    """ A dictionary like {key1:value1,key2:value2} where
+        valid keys are of type string, integer or float
+    """
+    
+    attrs = ["elements"]
+    def __init__(self, elements=None):
+        if elements is None:
+            elements = []
+        self.elements = elements
 
 
 class MethodCall(Expression):
