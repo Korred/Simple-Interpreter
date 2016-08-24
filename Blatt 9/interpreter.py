@@ -1,7 +1,7 @@
 import py
 import operator
 from simpleparser import parse
-from objmodel import W_Integer, W_Method, W_NormalObject, W_Float, W_List, W_String, W_KeyValue, W_Dict
+from objmodel import W_Integer, W_Method, W_NormalObject, W_Float, W_List, W_String, W_KeyValue, W_Dict, W_Boolean
 import default_builtins
 import pdb
 from math import floor, ceil
@@ -60,6 +60,9 @@ class Interpreter(object):
         res.parent = ctx
 
         return res
+
+    def eval_BoolLiteral(self, ast, w_context):
+        return W_Boolean(ast.value)
 
     def eval_KeyValueLiteral(self, ast, w_context):
         return W_KeyValue(ast.key,ast.value)
@@ -267,6 +270,11 @@ class Interpreter(object):
             l = self.eval(ast.receiver, w_context)
             return W_Integer(l.length)
 
+        if ast.methodname == "$dict_contains":
+            s = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context)
+            return W_Boolean(s.contains(param))
+
         if ast.methodname == "$string_length":
             s = self.eval(ast.receiver, w_context)
             return W_Integer(s.length())
@@ -279,6 +287,11 @@ class Interpreter(object):
             s = self.eval(ast.receiver, w_context)
             s2 = self.eval(ast.arguments[0], w_context)
             return W_String(s.append(s2))
+
+        if ast.methodname == "$string_equals":
+            s = self.eval(ast.receiver, w_context)
+            s2 = self.eval(ast.arguments[0], w_context)
+            return W_Boolean(s.equals(s2))
 
         if ast.methodname in ("$list_get","$dict_get"):
             l = self.eval(ast.receiver, w_context)
