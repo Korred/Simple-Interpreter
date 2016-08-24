@@ -37,6 +37,9 @@ object stringtrait:
     def reverse:
         self $string_reverse
 
+    def equals(x):
+        self $string_equals(x)
+
 object listtrait:
     def add(x):
         self $list_add(x)
@@ -72,6 +75,9 @@ object dicttrait:
 
     def get_keys(x):
         self $dict_get_keys(x)
+
+    def contains(x):
+        self $dict_contains(x)
 
     def len:
         self $dict_len
