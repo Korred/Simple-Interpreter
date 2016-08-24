@@ -90,6 +90,55 @@ class W_Float(W_NormalObject):
     def getparents(self):
         return [self.parent]
 
+class W_String(W_NormalObject):
+    def __init__(self, value):
+        self.value = value
+        self.parent = None
+
+    def setvalue(obj, name, value):
+        pass
+
+    def getvalue(self, name):
+        return None
+
+    def append(self, string):
+        return self.value + string.value
+
+    def length(self):
+        return len(self.value)
+
+    def reverse(self):
+        return self.value[::-1]
+
+    def istrue(self):
+        return self.value != ""
+
+    def clone(self):
+        return W_String(self.value)
+
+    def getparents(self):
+        return [self.parent]
+
+class W_KeyValue(W_NormalObject):
+    def __init__(self, key, value):
+        self.key = key
+        self.value = value
+        self.parent = None
+
+    def setvalue(obj, name, value):
+        pass  
+
+    def getvalue(self, name):
+        return None
+
+    def istrue(self):
+        return (self.key is not None) & (self.value is not None)
+
+    def clone(self):
+        return W_KeyValue(self.key,self.value)
+
+    def getparents(self):
+        return [self.parent]
 
 class W_List(W_NormalObject):
     def __init__(self, elements):
@@ -104,6 +153,7 @@ class W_List(W_NormalObject):
 
     def addelement(self, element):
         self.elements.append(element)
+        self.length += 1
 
     def istrue(self):
         return self.length != 0
@@ -121,8 +171,49 @@ class W_List(W_NormalObject):
     def getparents(self):
         return [self.parent]
 
+class W_Dict(W_NormalObject):
+    def __init__(self, elements):
+        if elements is None:
+            elements = []
+        self.elements = {}
+        for kv in elements:
+            key = kv.key.value
+            self.elements[key] = kv.value
+        self.parent = None
+        self.length = len(elements)
 
+    def getelement(self, key):
+        return self.elements.get(key)
 
+    def addelement(self, key, value):
+        self.elements[key.value] = value
+        self.length += 1
+
+    # return the keys to be able to iterate over a dictionary
+    def getkeys(self):
+        elements = []
+        for k in self.elements.keys():
+            if (isinstance(k, str)):
+                elements.append(W_String(k))
+            else:
+                elements.append(W_Integer(k))
+        return W_List(elements)
+
+    def istrue(self):
+        return self.length != 0
+
+    def delelement(self, key):
+        try:
+            del self.elements[key]
+            self.length -= 1
+        except KeyError:
+            raise KeyError("Provided key does not exist!")
+
+    def clone(self):
+        return W_Dict(self.elements)
+
+    def getparents(self):
+        return [self.parent]
 
 class W_Method(W_NormalObject):
     def __init__(self, ast_method):
