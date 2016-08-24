@@ -157,18 +157,9 @@ class Interpreter(object):
                     res = self.eval(m.method, m)
                     return res
 
-                elif m.__class__.__name__ == "W_Integer":
+                elif m.__class__.__name__ in ("W_Integer", "W_Float", "W_String", "W_Boolean"):
                     return m
-
-                elif m.__class__.__name__ == "W_Float":
-                    return m
-
-                elif m.__class__.__name__ == "W_String":
-                    return m
-
-                elif m.__class__.__name__ == "W_Boolean":
-                    return m
-
+                    
             # getting receiver from w_context
             
             # get method by methodname from receiver rec
@@ -204,7 +195,6 @@ class Interpreter(object):
                 return m
 
             else:
-                # what an else block here?
                 pass
 
     def eval_FunctionDefinition(self, ast, w_context):

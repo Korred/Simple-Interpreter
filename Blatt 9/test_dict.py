@@ -85,7 +85,8 @@ b = a len
 def test_interpreter_builtin_dict():
     ast = parse("""
 condition = True
-if condition:
+neg = False
+if neg or(condition and(condition)):
     a = {'a':12,'b':11,'c':10}
 else:
     a = {'a':12,'b':11,'c':10}
@@ -145,3 +146,24 @@ notcontains = a contains(27)
     assert w_module.getvalue("notcontains").value == False
     assert w_module.getvalue("b").value == 6
 
+def test_interpreter_boolean_dict():
+    ast = parse("""
+condition1 = True
+condition2 = False
+condition3 = True
+if condition2 or(condition1 and(condition3)):
+    dict = {12:True,13:False,32:True}
+else:
+    dict = {12:False,32:False}
+length = dict len
+temp = dict get(12)
+result = temp not
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    dict = w_module.getvalue("dict")
+    assert dict.getelement(12).value == 'True'
+    assert w_module.getvalue("temp").value == 'True'
+    assert w_module.getvalue("result").value == 'False'
+    assert w_module.getvalue("length").value == 3
