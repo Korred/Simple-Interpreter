@@ -62,7 +62,14 @@ class Interpreter(object):
         return res
 
     def eval_BoolLiteral(self, ast, w_context):
-        return W_Boolean(ast.value)
+        res = W_Boolean(ast.value)
+        for i in w_context.getc3():
+            ctx = i.getvalue("booltrait")
+            if ctx:
+                break
+        res.parent = ctx
+
+        return res
 
     def eval_KeyValueLiteral(self, ast, w_context):
         return W_KeyValue(ast.key,ast.value)
@@ -92,13 +99,13 @@ class Interpreter(object):
                 m = m.clone()
                 zipped_args = dict(zip(m.attrs["args"],ast.arguments))
                 for key in zipped_args:
-                    if zipped_args[key].__class__.__name__ not in ["W_Integer", "W_Float", "W_Method", "W_NormalObject", "W_String"]:
+                    if zipped_args[key].__class__.__name__ not in ["W_Integer", "W_Float", "W_Method", "W_NormalObject", "W_String", "W_Boolean"]:
                         zipped_args[key] = self.eval(zipped_args[key], w_context)
                 m.attrs.update(zipped_args)
                 res = self.eval(m.method, m)
 
                 return res
-            elif m.__class__.__name__ in ("IntLiteral","FloatLiteral","StringLiteral"):
+            elif m.__class__.__name__ in ("IntLiteral","FloatLiteral","StringLiteral","BoolLiteral"):
                 res = self.eval(m, w_context)
                 return res
             else:
@@ -108,7 +115,7 @@ class Interpreter(object):
             # different receiver of methodcall
             rec = self.eval(ast.receiver, w_context)
             # eval receiver object
-            if rec.__class__.__name__ in ("W_List","W_Dict","W_Integer","W_Float","W_String"):
+            if rec.__class__.__name__ in ("W_List","W_Dict","W_Integer","W_Float","W_String","W_Boolean"):
                 for i in w_context.getc3():
                     if (rec.__class__.__name__ == "W_Dict"):
                         ctx = i.getvalue("dicttrait")
@@ -118,6 +125,8 @@ class Interpreter(object):
                         ctx = i.getvalue("floattrait")
                     elif (rec.__class__.__name__ == "W_String"):
                         ctx = i.getvalue("stringtrait")
+                    elif (rec.__class__.__name__ == "W_Boolean"):
+                        ctx = i.getvalue("booltrait")
                     else:
                         ctx = i.getvalue("listtrait")
                     if ctx:
@@ -131,7 +140,7 @@ class Interpreter(object):
                     for p in ast.arguments:
                         # eval arguments as receiver later is different
                         # check whether W_Method can be reached here
-                        if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Float", "W_Method", "W_String"]:
+                        if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Float", "W_Method", "W_String", "W_Boolean"]:
                             params.append(p)
                         else:
                             # it might be necessary to handle different edge cases here
@@ -155,6 +164,9 @@ class Interpreter(object):
                     return m
 
                 elif m.__class__.__name__ == "W_String":
+                    return m
+
+                elif m.__class__.__name__ == "W_Boolean":
                     return m
 
             # getting receiver from w_context
@@ -297,6 +309,20 @@ class Interpreter(object):
             l = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value
             return l.getelement(param)
+        
+        if ast.methodname == "$boolean_not":
+            b = self.eval(ast.receiver, w_context)
+            return W_Boolean(b.simplenot())
+        
+        if ast.methodname == "$boolean_and":
+            b = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context).value
+            return W_Boolean(b.simpleand(param))
+        
+        if ast.methodname == "$boolean_or":
+            b = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context).value
+            return W_Boolean(b.simpleor(param))
 
         # ceil/floor logic
         if ast.methodname in ("$ceil", "$floor"):
@@ -392,4 +418,3 @@ class Interpreter(object):
         res.parent = ctx
 
         return res
-

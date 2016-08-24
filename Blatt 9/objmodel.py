@@ -83,6 +83,24 @@ class W_Boolean(W_NormalObject):
     def istrue(self):
         return self.value == 'True'
 
+    def simplenot(self):
+        if (self.value == 'True'):
+            return 'False'
+        else:
+            return 'True'
+
+    def simpleand(self, param):
+        if (self.value == param) & (self.value == 'True'):
+            return 'True'
+        else:
+            return 'False'
+
+    def simpleor(self, param):
+        if (self.value == 'True') or (param == 'True'):
+            return 'True'
+        else:
+            return 'False'
+
     def clone(self):
         return W_Boolean(self.value)
 

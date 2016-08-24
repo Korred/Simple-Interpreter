@@ -63,6 +63,17 @@ object listtrait:
             i = i add(1)
         self
 
+object booltrait:
+    def not:
+        self $boolean_not
+
+    def and(x):
+        self $boolean_and(x)
+
+    def or(x):
+        self $boolean_or(x)
+
+
 object dicttrait:
     def add(x,y):
         self $dict_add(x,y)
