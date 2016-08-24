@@ -4,7 +4,6 @@ from simpleparser import parse
 from simplelexer import lex
 from interpreter import Interpreter
 from simpleast import *
-from objmodel import W_Float, W_Integer
 
 # Lexer Tests
 

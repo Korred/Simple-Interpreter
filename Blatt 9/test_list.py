@@ -92,6 +92,20 @@ b = [-1.555,0.0,+1.5,5]
     assert w_module.getvalue("b").elements[2].value == +1.5
     assert w_module.getvalue("b").elements[3].value == 5
 
+def test_list_length():
+    ast = parse("""
+a = [1,2,3,4]
+a del(1)
+l1 = a len
+a add(5)
+a add(6)
+l2 = a len
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("l1").value == 3
+    assert w_module.getvalue("l2").value == 5
 
 def test_list_i_def():
     ast = parse("""
