@@ -30,6 +30,8 @@ lde = de len
 labcde = abcde len
 arev = a reverse
 abrev = ab reverse
+equal = a equals(a)
+notequal = a equals(b)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -45,6 +47,8 @@ abrev = ab reverse
     assert w_module.getvalue("abcde").value == "dynlang 2016"
     assert w_module.getvalue("arev").value == "nyd"
     assert w_module.getvalue("abrev").value == "gnalnyd"
+    assert w_module.getvalue("equal").value == True
+    assert w_module.getvalue("notequal").value == False
     assert w_module.getvalue("la").value == 3
     assert w_module.getvalue("lde").value == 4
     assert w_module.getvalue("labcde").value == 12

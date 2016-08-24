@@ -82,6 +82,27 @@ b = a len
     assert dict.getelement(1) == None
     assert w_module.getvalue("b").value == 2
 
+def test_interpreter_builtin_dict():
+    ast = parse("""
+condition = True
+if condition:
+    a = {'a':12,'b':11,'c':10}
+else:
+    a = {'a':12,'b':11,'c':10}
+a del('a')
+a add('d',9)
+a add('e',8)
+a add('f',7)
+length = a len
+value = a get('d')
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("condition").value == 'True'
+    assert w_module.getvalue("length").value == 5
+    assert w_module.getvalue("value").value == 9
+
 def test_interpreter_mixed_builtin_dict():
     ast = parse("""
 a = {\"a\":1.1,\"b\":2.3,\"c\":3.5}
@@ -107,6 +128,8 @@ a = {\"a\":1.1,\"b\":2.3,\"c\":3.5,1:\"som\",2:\"eth\",3:\"wupwup\"}
 a del(3)
 a add(3,\"ing\")
 b = a len
+contains = a contains(1)
+notcontains = a contains(27)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -118,5 +141,7 @@ b = a len
     assert dict.getelement(1).value == "som"
     assert dict.getelement(2).value == "eth"
     assert dict.getelement(3).value == "ing"
+    assert w_module.getvalue("contains").value == True
+    assert w_module.getvalue("notcontains").value == False
     assert w_module.getvalue("b").value == 6
 
