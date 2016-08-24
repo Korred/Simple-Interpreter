@@ -69,6 +69,25 @@ class W_Integer(W_NormalObject):
     def getparents(self):
         return [self.parent]
 
+class W_Boolean(W_NormalObject):
+    def __init__(self, value):
+        self.value = value
+        self.parent = None
+
+    def setvalue(obj, name, value):
+        pass  
+
+    def getvalue(self, name):
+        return None
+
+    def istrue(self):
+        return self.value == 'True'
+
+    def clone(self):
+        return W_Boolean(self.value)
+
+    def getparents(self):
+        return [self.parent]
 
 class W_Float(W_NormalObject):
     def __init__(self, value):
@@ -109,6 +128,9 @@ class W_String(W_NormalObject):
 
     def reverse(self):
         return self.value[::-1]
+
+    def equals(self, string):
+        return (self.value == string.value)
 
     def istrue(self):
         return self.value != ""
@@ -198,6 +220,11 @@ class W_Dict(W_NormalObject):
             else:
                 elements.append(W_Integer(k))
         return W_List(elements)
+
+    def contains(self, key):
+        keyobjects = self.getkeys().elements
+        keys = [k.value for k in keyobjects]
+        return (key.value in keys)
 
     def istrue(self):
         return self.length != 0

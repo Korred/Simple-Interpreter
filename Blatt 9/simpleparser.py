@@ -7,7 +7,7 @@ from simplelexer import lex
 from rply.token import Token
 from rply import ParserGenerator
 
-tkns = ["If", "Else", "While", "Def", "Object", "Number",
+tkns = ["If", "Else", "While", "Def", "Object", "Number", "Boolean",
         "String", "Name", "Indent", "Dedent", "Newline", "OpenBracket",
         "CloseBracket", "Comma", "Assign", "Colon", "PrimitiveName",
         "EOF", "Float", "ListOpenBracket", "ListCloseBracket",
@@ -171,6 +171,9 @@ def float_expression(stmt):
 def string_expression(stmt):
     return simpleast.StringLiteral(stmt[0].value)
 
+@pg.production("basic_expression : Boolean")
+def boolean_expression(stmt):
+    return simpleast.BoolLiteral(stmt[0].value)
 
 @pg.production("basic_expression : ListOpenBracket ListCloseBracket")
 @pg.production("basic_expression : ListOpenBracket arguments ListCloseBracket")

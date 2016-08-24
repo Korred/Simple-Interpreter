@@ -24,6 +24,7 @@ def maybe(*choices):
 
 Number = r'(?<![\.\d])(([+-])?[1-9][0-9]*)(?![\.\d])|(?<![\.\d])0(?![\.\d])'
 Float = r'[-+]?([0-9]+[.][0-9]+)'
+Boolean = r'(True|False)'
 
 
 # ' or " string.
@@ -72,7 +73,7 @@ Def = r'def'
 Object = r'object'
 
 # Tokens used in parser rules
-tokens = ["If", "Else", "While", "Def", "Object",
+tokens = ["If", "Else", "While", "Def", "Object", "Boolean",
           "Number", "String", "Ignore", "Indent", "OpenBracket",
           "CloseBracket", "Comma", "Assign", "Colon", "Name",
           "PrimitiveName", "Float", "ListOpenBracket", "ListCloseBracket",
