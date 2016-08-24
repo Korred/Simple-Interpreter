@@ -167,6 +167,10 @@ def number_expression(stmt):
 def float_expression(stmt):
     return simpleast.FloatLiteral(stmt[0].value)
 
+@pg.production("basic_expression : String")
+def string_expression(stmt):
+    return simpleast.StringLiteral(stmt[0].value)
+
 
 @pg.production("basic_expression : ListOpenBracket ListCloseBracket")
 @pg.production("basic_expression : ListOpenBracket arguments ListCloseBracket")
@@ -176,6 +180,22 @@ def list_expression(args):
     else:
         args = args[1]
     return simpleast.ListLiteral(args)
+
+@pg.production("basic_expression : MapOpenBracket MapCloseBracket")
+@pg.production("basic_expression : MapOpenBracket arguments MapCloseBracket")
+def dict_expression(args):
+    if len(args) < 3:
+        args = None
+    else:
+        args = args[1]
+    return simpleast.DictLiteral(args)
+
+@pg.production("basic_expression : Number Colon basic_expression")
+def key_value_expression(args):
+    return simpleast.KeyValueLiteral(simpleast.IntLiteral(args[0].value),args[2])
+@pg.production("basic_expression : String Colon basic_expression")
+def key_value_expression(args):
+    return simpleast.KeyValueLiteral(simpleast.StringLiteral(args[0].value),args[2])
 
 
 @pg.production("basic_expression : implicitselfmethodcall")
