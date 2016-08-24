@@ -27,6 +27,16 @@ object floattrait:
     def div(x):
         self $float_div(x)
 
+object stringtrait:
+    def len:
+        self $string_length
+
+    def append(x):
+        self $string_append(x)
+
+    def reverse:
+        self $string_reverse
+
 object listtrait:
     def add(x):
         self $list_add(x)
@@ -50,7 +60,21 @@ object listtrait:
             i = i add(1)
         self
 
+object dicttrait:
+    def add(x,y):
+        self $dict_add(x,y)
 
+    def del(x):
+        self $dict_del(x)
+
+    def get(x):
+        self $dict_get(x)
+
+    def get_keys(x):
+        self $dict_get_keys(x)
+
+    def len:
+        self $dict_len
 
 def to_int(x):
     $to_int(x)
