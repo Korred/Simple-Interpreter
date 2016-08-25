@@ -32,6 +32,7 @@ arev = a reverse
 abrev = ab reverse
 equal = a equals(a)
 notequal = a equals(b)
+arevrev = a reverse reverse
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -47,9 +48,32 @@ notequal = a equals(b)
     assert w_module.getvalue("abcde").value == "dynlang 2016"
     assert w_module.getvalue("arev").value == "nyd"
     assert w_module.getvalue("abrev").value == "gnalnyd"
-    assert w_module.getvalue("equal").value == True
-    assert w_module.getvalue("notequal").value == False
+    assert w_module.getvalue("equal").value == 'True'
+    assert w_module.getvalue("notequal").value == 'False'
     assert w_module.getvalue("la").value == 3
     assert w_module.getvalue("lde").value == 4
     assert w_module.getvalue("labcde").value == 12
+    assert w_module.getvalue("arevrev").value == "dyn"
 
+def test_interpreter_string_logic():
+    ast = parse("""
+s = 'test123'
+bcond = True
+if bcond and(s equals(s reverse reverse)):
+    dict = {'a':'test123','b':'test012'}
+bool = s equals(dict get('a'))
+srev = s reverse reverse
+b1 = s equals(s reverse reverse)
+b2 = bcond and(s equals(s reverse reverse))
+if s equals('123'):
+    b3 = True
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("dict").getelement('a').value == "test123"
+    assert w_module.getvalue("bool").value == 'True'
+    assert w_module.getvalue("srev").value == "test123"
+    assert w_module.getvalue("b1").value == 'True'
+    assert w_module.getvalue("b2").value == 'True'
+    assert w_module.getvalue("b3") == None

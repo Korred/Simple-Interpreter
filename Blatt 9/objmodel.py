@@ -155,7 +155,10 @@ class W_String(W_NormalObject):
         return self.value[::-1]
 
     def equals(self, string):
-        return (self.value == string.value)
+        if (self.value == string.value):
+            return 'True'
+        else:
+            return 'False'
 
     def istrue(self):
         return self.value != ""
