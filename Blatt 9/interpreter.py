@@ -314,6 +314,11 @@ class Interpreter(object):
             param = self.eval(ast.arguments[0], w_context).value
             return W_Boolean(b.simpleor(param))
 
+        if ast.methodname == "$boolean_xor":
+            b = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context).value
+            return W_Boolean(b.simplexor(param))
+
         # ceil/floor logic
         if ast.methodname in ("$ceil", "$floor"):
             param = self.eval(ast.arguments[0], w_context)

@@ -101,6 +101,13 @@ class W_Boolean(W_NormalObject):
         else:
             return 'False'
 
+    def simplexor(self, param):
+        if ((self.value == 'True') & (param == 'False') or 
+            (self.value == 'False') & (param == 'True')):
+            return 'True'
+        else:
+            return 'False'      
+
     def clone(self):
         return W_Boolean(self.value)
 

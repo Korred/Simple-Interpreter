@@ -73,6 +73,17 @@ object booltrait:
     def or(x):
         self $boolean_or(x)
 
+    def nand(x):
+        self and(x) not
+
+    def nor(x):
+        self or(x) not
+
+    def xor(x):
+        self $boolean_xor(x)
+
+    def xnor(x):
+        self xor(x) not    
 
 object dicttrait:
     def add(x,y):
