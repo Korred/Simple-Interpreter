@@ -199,6 +199,9 @@ def key_value_expression(args):
 @pg.production("basic_expression : String Colon basic_expression")
 def key_value_expression(args):
     return simpleast.KeyValueLiteral(simpleast.StringLiteral(args[0].value),args[2])
+@pg.production("basic_expression : Float Colon basic_expression")
+def key_value_expression(args):
+    return simpleast.KeyValueLiteral(simpleast.FloatLiteral(args[0].value),args[2])
 
 
 @pg.production("basic_expression : implicitselfmethodcall")
