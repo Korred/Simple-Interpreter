@@ -53,6 +53,8 @@ object listtrait:
     def len:
         self $list_len
 
+    # Todo(?): reverse list
+
     def append(x):
         l = x len
         i = 0

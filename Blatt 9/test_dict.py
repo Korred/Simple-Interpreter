@@ -7,6 +7,7 @@ from simpleast import *
 
 # Lexer Tests
 
+
 def test_lexer():
     s = "{\"a\":1,\"b\":2}"
     tokens = lex(s)
@@ -21,6 +22,7 @@ def test_lexer():
     assert [t.name for t in tokens] == ['MapOpenBracket', 'Number', 'Colon', 'Float', 'MapCloseBracket', 'Newline', 'EOF']
 
 # Parser Tests
+
 
 def test_parser_simple_dict():
     ast = parse("{1:1,1:2}")
@@ -56,6 +58,7 @@ a del(1)
 
 
 # Interpreter Tests
+
 
 def test_interpreter_dict():
     ast = parse("a = {\"a\":1,\"b\":2,\"c\":4}")
@@ -111,6 +114,11 @@ a del(\"a\")
 a add(\"d\",4.7)
 b = a len
 c = a get(\"d\")
+d = {}
+d del('a')
+d add('a',1.2)
+d del('b')
+dlen = d len
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -122,6 +130,8 @@ c = a get(\"d\")
     assert dict.getelement("a") == None
     assert w_module.getvalue("c").value == 4.7
     assert w_module.getvalue("b").value == 3
+    assert w_module.getvalue("d").getelement('a').value == 1.2
+    assert w_module.getvalue("dlen").value == 1
 
 def test_interpreter_mixed_keys_dict():
     ast = parse("""
@@ -169,3 +179,22 @@ result = temp not
     assert w_module.getvalue("temp").value == 'True'
     assert w_module.getvalue("result").value == 'False'
     assert w_module.getvalue("length").value == 3
+
+def test_interpreter_iterate_dict():
+    # dict to list
+    ast = parse("""
+dict = {'a':5,'b':4,'c':3,'d':2,'e':1,'f':0}
+keys = dict get_keys
+length = keys len
+i = length
+list = []
+while i:
+    key = keys get(length sub(i))
+    list add(dict get(key))
+    i = i sub(1)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    list = [e.value for e in w_module.getvalue("list").elements]
+    assert all(e in list for e in [0,1,2,3,4,5])

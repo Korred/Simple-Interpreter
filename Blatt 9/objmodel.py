@@ -242,9 +242,11 @@ class W_Dict(W_NormalObject):
     # return the keys to be able to iterate over a dictionary
     def getkeys(self):
         elements = []
-        for k in self.elements.keys():
+        for k in list(self.elements.keys()):
             if (isinstance(k, str)):
                 elements.append(W_String(k))
+            elif (isinstance(k, float)):
+                elements.append(W_Float(k))
             else:
                 elements.append(W_Integer(k))
         return W_List(elements)
@@ -262,7 +264,8 @@ class W_Dict(W_NormalObject):
             del self.elements[key]
             self.length -= 1
         except KeyError:
-            raise KeyError("Provided key does not exist!")
+            # nothing to do, don't raise a key error
+            pass
 
     def clone(self):
         return W_Dict(self.elements)
