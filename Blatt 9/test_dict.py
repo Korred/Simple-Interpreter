@@ -125,7 +125,7 @@ c = a get(\"d\")
 
 def test_interpreter_mixed_keys_dict():
     ast = parse("""
-a = {\"a\":1.1,\"b\":2.3,\"c\":3.5,1:\"som\",2:\"eth\",3:\"wupwup\"}
+a = {\"a\":1.1,\"b\":2.3,\"c\":3.5,1:\"som\",2:\"eth\",3:\"wupwup\",4.2:\"wsws\",2.7:3.4}
 a del(3)
 a add(3,\"ing\")
 b = a len
@@ -142,9 +142,11 @@ notcontains = a contains(27)
     assert dict.getelement(1).value == "som"
     assert dict.getelement(2).value == "eth"
     assert dict.getelement(3).value == "ing"
+    assert dict.getelement(4.2).value == "wsws"
+    assert dict.getelement(2.7).value == 3.4
     assert w_module.getvalue("contains").value == True
     assert w_module.getvalue("notcontains").value == False
-    assert w_module.getvalue("b").value == 6
+    assert w_module.getvalue("b").value == 8
 
 def test_interpreter_boolean_dict():
     ast = parse("""

@@ -51,3 +51,31 @@ bool3 = neg and(neg)
     assert w_module.getvalue("bool2").value == 'True'
     assert w_module.getvalue("bool3").value == 'False'
     assert w_module.getvalue("c").value == 1
+
+def test_interpreter_boolean_logic():
+    ast = parse("""
+a = True
+b = False
+c = a and(b or(a))
+d = a and(a not)
+e = a nand(a)
+f = a nor(a)
+g = a xnor(b xor(b nand(e)))
+h = a nand(e or(g nor(a)))
+i = h and(g) not
+j = a and(b xor(b nand(a nand(e or(g nor(a or(e xor(g nor(a)))) not)))))
+k = a not not
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("c").value == 'True'
+    assert w_module.getvalue("d").value == 'False'
+    assert w_module.getvalue("e").value == 'False'
+    assert w_module.getvalue("f").value == 'False'
+    assert w_module.getvalue("g").value == 'True'
+    assert w_module.getvalue("h").value == 'True'
+    assert w_module.getvalue("i").value == 'False'
+    assert w_module.getvalue("j").value == 'True'
+    assert w_module.getvalue("k").value == 'True'
