@@ -14,25 +14,17 @@ def test_string_object():
     assert w1.value == w2.reverse()
     assert w1.append(W_String(w2.reverse())) == "stringstring"
 
-def test_interpreter_builtin_string():
+def test_interpreter_string_append():
     ast = parse("""
 a = "dyn"
 b = "lang"
 c = " "
 d = "20"
 e = "16"
-la = a len
 ab = a append(b)
 abc = ab append(c)
 de = d append(e)
 abcde = abc append(de)
-lde = de len
-labcde = abcde len
-arev = a reverse
-abrev = ab reverse
-equal = a equals(a)
-notequal = a equals(b)
-arevrev = a reverse reverse
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -46,14 +38,44 @@ arevrev = a reverse reverse
     assert w_module.getvalue("abc").value == "dynlang "
     assert w_module.getvalue("de").value == "2016"
     assert w_module.getvalue("abcde").value == "dynlang 2016"
-    assert w_module.getvalue("arev").value == "nyd"
-    assert w_module.getvalue("abrev").value == "gnalnyd"
-    assert w_module.getvalue("equal").value == 'True'
-    assert w_module.getvalue("notequal").value == 'False'
-    assert w_module.getvalue("la").value == 3
-    assert w_module.getvalue("lde").value == 4
-    assert w_module.getvalue("labcde").value == 12
-    assert w_module.getvalue("arevrev").value == "dyn"
+
+def test_interpreter_string_length():
+    ast = parse("""
+a = "string"
+b = "laaaaaaaaaaaanger string"
+c = ""
+d = " "
+la = a len
+lb = b len
+lc = c len
+ld = d len
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("la").value == 6
+    assert w_module.getvalue("lb").value == 24
+    assert w_module.getvalue("lc").value == 0
+    assert w_module.getvalue("ld").value == 1
+
+def test_interpreter_builtin_string():
+    ast = parse("""
+a = "dynlang"
+b = "gnalnyd"
+arev = a reverse
+brev = b reverse
+equal1 = a equals(brev)
+equal2 = arev equals(b)
+arevrev = a reverse reverse
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("arev").value == "gnalnyd"
+    assert w_module.getvalue("brev").value == "dynlang"
+    assert w_module.getvalue("equal1").value == 'True'
+    assert w_module.getvalue("equal2").value == 'True'
+    assert w_module.getvalue("arevrev").value == "dynlang"
 
 def test_interpreter_string_logic():
     ast = parse("""
