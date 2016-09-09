@@ -110,10 +110,10 @@ class StringLiteral(Expression):
         self.value = value[1:-1]    # cut off quotes, otherwise we'd have double quoted strings
 
 class BoolLiteral(Expression):
-    """ A string literal like "abc" """
+    """ A bool literal True/False"""
     attrs = ["value"]
     def __init__(self, value):
-        self.value = value
+        self.value = (value == 'True')      # parser obtains 'True'/'False'
 
 class KeyValueLiteral(Expression):
     """ A tuple of key and value used in dictionarys like "a":1
