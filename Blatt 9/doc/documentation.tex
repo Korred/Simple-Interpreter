@@ -23,6 +23,7 @@ The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method
 The String object extends W\_NormalObject and is true if the string's value is not empty.
 This type provides some additional built-in methods to be able to combine or compare several strings. 
 It is possible to concatenate two strings using \texttt{s1 append(s2)} or reverse a string with \texttt{s reverse}. Furthermore the length of a string is given by \texttt{s len}. 
+
 In order to compare two strings a call of \texttt{s1 equals(s2)} returns a W\_Boolean value, i.e. \texttt{True} if the two strings are equal or \texttt{False} otherwise.
 The latter method can be used within boolean logic, e.g. within an if statement's condition to control the syntactic behaviour of the program.
 
@@ -31,12 +32,15 @@ The latter method can be used within boolean logic, e.g. within an if statement'
 The dictionary extends W\_NormalObject and is internally implemented using a Python dictionary.
 Relating to the semantics of a dictionary we decided to represent each element as a tuple of key and value like it is realized in Python, i.e. using the form \texttt{key:value} for its elements.
 We decided W\_String, W\_Integer as well as W\_Float to be valid keys for a dictionary.
+
 In order to work with dictionaries the object provides several built-in methods.
 We can add an element to a dictionary using \texttt{dict add(key,value)} or delete an element by its key with the use of \texttt{dict del(key)}.
 To derive the value of a stored tuple the object provides a getter that needs the key as the parameter like \texttt{dict get(key)}.
 The amount of the elements stored in the dictionary is obtained by \texttt{dict len}.
-In order to be able to iterate over a dictionaries keys or do other useful things we provide the method \texttt{get\_keys} that returns a W\_List of all keys.
+
+To be able to iterate over a dictionaries keys or do other useful things we provide the method \texttt{get\_keys} that returns a W\_List of all keys.
 Furthermore we decided that the types of the keys are dynamic, i.e. we accept mixed types of keys in a single dictionary.
+
 Despite that it is possible to check if a dictionary contains a key by calling \texttt{dict contains(key)} which returns a W\_Boolean.
 Hence, we are able to build more complex conditions used in if statements which leads to more flexibility in the programs that can be processed by the interpreter.
 
