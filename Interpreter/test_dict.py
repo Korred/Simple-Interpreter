@@ -108,7 +108,7 @@ value = a get('d')
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    assert w_module.getvalue("condition").value == 'True'
+    assert w_module.getvalue("condition").value == True
     assert w_module.getvalue("length").value == 5
     assert w_module.getvalue("value").value == 9
 
@@ -180,9 +180,9 @@ result = temp not
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     dict = w_module.getvalue("dict")
-    assert dict.getelement(12).value == 'True'
-    assert w_module.getvalue("temp").value == 'True'
-    assert w_module.getvalue("result").value == 'False'
+    assert dict.getelement(12).value == True
+    assert w_module.getvalue("temp").value == True
+    assert w_module.getvalue("result").value == False
     assert w_module.getvalue("length").value == 3
 
 def test_interpreter_iterate_dict():

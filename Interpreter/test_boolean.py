@@ -45,11 +45,11 @@ bool3 = neg and(neg)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("a").value == 'True'
-    assert w_module.getvalue("neg").value == 'False'
-    assert w_module.getvalue("bool1").value == 'True'
-    assert w_module.getvalue("bool2").value == 'True'
-    assert w_module.getvalue("bool3").value == 'False'
+    assert w_module.getvalue("a").value == True
+    assert w_module.getvalue("neg").value == False
+    assert w_module.getvalue("bool1").value == True
+    assert w_module.getvalue("bool2").value == True
+    assert w_module.getvalue("bool3").value == False
     assert w_module.getvalue("c").value == 1
 
 def test_interpreter_boolean_logic():
@@ -70,12 +70,12 @@ k = a not not
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("c").value == 'True'
-    assert w_module.getvalue("d").value == 'False'
-    assert w_module.getvalue("e").value == 'False'
-    assert w_module.getvalue("f").value == 'False'
-    assert w_module.getvalue("g").value == 'True'
-    assert w_module.getvalue("h").value == 'True'
-    assert w_module.getvalue("i").value == 'False'
-    assert w_module.getvalue("j").value == 'True'
-    assert w_module.getvalue("k").value == 'True'
+    assert w_module.getvalue("c").value == True
+    assert w_module.getvalue("d").value == False
+    assert w_module.getvalue("e").value == False
+    assert w_module.getvalue("f").value == False
+    assert w_module.getvalue("g").value == True
+    assert w_module.getvalue("h").value == True
+    assert w_module.getvalue("i").value == False
+    assert w_module.getvalue("j").value == True
+    assert w_module.getvalue("k").value == True

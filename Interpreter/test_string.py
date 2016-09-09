@@ -88,8 +88,8 @@ arevrev = a reverse reverse
     assert w_module.getvalue("arev").value == "gnalnyd"
     assert w_module.getvalue("brev").value == "dynlang"
     assert w_module.getvalue("emptyrev").value == ""
-    assert w_module.getvalue("equal1").value == 'True'
-    assert w_module.getvalue("equal2").value == 'True'
+    assert w_module.getvalue("equal1").value == True
+    assert w_module.getvalue("equal2").value == True
     assert w_module.getvalue("arevrev").value == "dynlang"
 
 def test_interpreter_string_logic():
@@ -109,8 +109,8 @@ if s equals('123'):
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("dict").getelement('a').value == "test123"
-    assert w_module.getvalue("bool").value == 'True'
+    assert w_module.getvalue("bool").value == True
     assert w_module.getvalue("srev").value == "test123"
-    assert w_module.getvalue("b1").value == 'True'
-    assert w_module.getvalue("b2").value == 'True'
+    assert w_module.getvalue("b1").value == True
+    assert w_module.getvalue("b2").value == True
     assert w_module.getvalue("b3") == None
