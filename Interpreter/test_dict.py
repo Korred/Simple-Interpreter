@@ -9,11 +9,11 @@ from simpleast import *
 
 
 def test_lexer():
-    s = "{\"a\":1,\"b\":2}"
+    s = "{'a':1,'b':2}"
     tokens = lex(s)
     assert [t.name for t in tokens] == ['MapOpenBracket', 'String', 'Colon', 'Number', 'Comma', 'String', 'Colon', 'Number', 'MapCloseBracket', 'Newline', 'EOF']
 
-    s = "{4:\"a\"}"
+    s = "{4:'a'}"
     tokens = lex(s)
     assert [t.name for t in tokens] == ['MapOpenBracket', 'Number', 'Colon', 'String', 'MapCloseBracket', 'Newline', 'EOF']
 
@@ -28,30 +28,30 @@ def test_parser_simple_dict():
     ast = parse("{1:1,1:2}")
     assert ast == Program([ExprStatement(DictLiteral([KeyValueLiteral(IntLiteral(1), IntLiteral(1)), KeyValueLiteral(IntLiteral(1), IntLiteral(2))]))])
 
-    ast = parse("a = {1:\"a\",2:\"b\"}")
+    ast = parse("a = {1:'a',2:'b'}")
     assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(1), StringLiteral('"a"')), KeyValueLiteral(IntLiteral(2), StringLiteral('"b"'))]))])
 
     ast = parse("""
-a = {12:\"a\",27:\"b\"}
-b = {\"a\":2,\"b\":4}
+a = {12:'a',27:'b'}
+b = {'a':2,'b':4}
 """)
     assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(12), StringLiteral('"a"')), KeyValueLiteral(IntLiteral(27), StringLiteral('"b"'))])), Assignment(ImplicitSelf(), 'b', DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(2)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(4))]))])
 
 
 def test_parser_builtin_dict():
-    ast = parse("{\"a\":1,\"b\":2} add(\"c\",4)")
+    ast = parse("{'a':1,'b':2} add('c',4)")
     assert ast == Program([ExprStatement(MethodCall(DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2))]), 'add', [StringLiteral('"c"'), IntLiteral(4)]))])
 
-    ast = parse("{\"a\":1,\"b\":2,\"c\":4} del(\"b\")")
+    ast = parse("{'a':1,'b':2,'c':4} del('b')")
     assert ast == Program([ExprStatement(MethodCall(DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2)), KeyValueLiteral(StringLiteral('"c"'), IntLiteral(4))]), 'del', [StringLiteral('"b"')]))])
     
-    ast = parse("{\"a\":1,\"b\":2,\"c\":4} get(\"a\")")
+    ast = parse("{'a':1,'b':2,'c':4} get('a')")
     assert ast == Program([ExprStatement(MethodCall(DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2)), KeyValueLiteral(StringLiteral('"c"'), IntLiteral(4))]), 'get', [StringLiteral('"a"')]))])
 
     ast = parse("""
 a = {1:2,2:3}
-b = {\"a\":13,\"b\":14}
-e = b get(\"b\")
+b = {'a':13,'b':14}
+e = b get('b')
 a del(1)
 """)
     assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(1), IntLiteral(2)), KeyValueLiteral(IntLiteral(2), IntLiteral(3))])), Assignment(ImplicitSelf(), 'b', DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(13)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(14))])), Assignment(ImplicitSelf(), 'e', MethodCall(MethodCall(ImplicitSelf(), 'b', []), 'get', [StringLiteral('"b"')])), ExprStatement(MethodCall(MethodCall(ImplicitSelf(), 'a', []), 'del', [IntLiteral(1)]))])
@@ -61,7 +61,7 @@ a del(1)
 
 
 def test_interpreter_dict():
-    ast = parse("a = {\"a\":1,\"b\":2,\"c\":4}")
+    ast = parse("a = {'a':1,'b':2,'c':4}")
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
@@ -75,6 +75,10 @@ def test_interpreter_add_del_dict():
 a = {2:1,1:2,3:4}
 a del(1)
 b = a len
+c = {}
+c del(1)
+c del('a')
+c del(1.2)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -84,6 +88,7 @@ b = a len
     assert dict.getelement(3).value == 4
     assert dict.getelement(1) == None
     assert w_module.getvalue("b").value == 2
+    assert w_module.getvalue("c").elements == {}
 
 def test_interpreter_builtin_dict():
     ast = parse("""
@@ -109,11 +114,11 @@ value = a get('d')
 
 def test_interpreter_mixed_builtin_dict():
     ast = parse("""
-a = {\"a\":1.1,\"b\":2.3,\"c\":3.5}
-a del(\"a\")
-a add(\"d\",4.7)
+a = {'a':1.1,'b':2.3,'c':3.5}
+a del('a')
+a add('d',4.7)
 b = a len
-c = a get(\"d\")
+c = a get('d')
 d = {}
 d del('a')
 d add('a',1.2)
@@ -135,9 +140,9 @@ dlen = d len
 
 def test_interpreter_mixed_keys_dict():
     ast = parse("""
-a = {\"a\":1.1,\"b\":2.3,\"c\":3.5,1:\"som\",2:\"eth\",3:\"wupwup\",4.2:\"wsws\",2.7:3.4}
+a = {'a':1.1,'b':2.3,'c':3.5,1:'som',2:'eth',3:'wupwup',4.2:'wsws',2.7:3.4}
 a del(3)
-a add(3,\"ing\")
+a add(3,'ing')
 b = a len
 contains = a contains(1)
 notcontains = a contains(27)

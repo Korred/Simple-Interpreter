@@ -58,12 +58,26 @@ ld = d len
     assert w_module.getvalue("lc").value == 0
     assert w_module.getvalue("ld").value == 1
 
+def test_interpreter_string_special_signs():
+    ast = parse("""
+a = "{[ <'string'> ]}"
+b = "?!§$%&&%&1234[]{]}"
+la = a len
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("la").value == 16
+    assert w_module.getvalue("a").value == "{[ <'string'> ]}"
+    assert w_module.getvalue("b").value == "?!§$%&&%&1234[]{]}"
+
 def test_interpreter_builtin_string():
     ast = parse("""
 a = "dynlang"
 b = "gnalnyd"
 arev = a reverse
 brev = b reverse
+emptyrev = "" reverse
 equal1 = a equals(brev)
 equal2 = arev equals(b)
 arevrev = a reverse reverse
@@ -73,6 +87,7 @@ arevrev = a reverse reverse
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("arev").value == "gnalnyd"
     assert w_module.getvalue("brev").value == "dynlang"
+    assert w_module.getvalue("emptyrev").value == ""
     assert w_module.getvalue("equal1").value == 'True'
     assert w_module.getvalue("equal2").value == 'True'
     assert w_module.getvalue("arevrev").value == "dynlang"
@@ -86,7 +101,7 @@ if bcond and(s equals(s reverse reverse)):
 bool = s equals(dict get('a'))
 srev = s reverse reverse
 b1 = s equals(s reverse reverse)
-b2 = bcond and(s equals(s reverse reverse))
+b2 = False or(s equals(s reverse reverse))
 if s equals('123'):
     b3 = True
 """)
