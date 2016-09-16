@@ -1,6 +1,7 @@
 # prototype-based object model of the language
 from c3computation import mro
 
+
 class W_NormalObject(object):
     # Prototype
     def __init__(self, attrs=None):
@@ -16,15 +17,8 @@ class W_NormalObject(object):
         return mro(self)
 
     def getparents(self):
-        return [self.attrs[p] for p in self.parents + ['__parent__'] if p in self.attrs]
-        '''
-        p = self.getvalue("__parent__")
-        if p:
-            return [p] + list(self.parents)
-        # special case for when self is the outer module - has no parent attr
-        else:
-            return []
-        '''
+        return [self.attrs[p] for p in self.parents + ['__parent__']
+                if p in self.attrs]
 
     def setvalue(self, name, value):
         self.attrs[name] = value
@@ -39,10 +33,6 @@ class W_NormalObject(object):
         return True
 
     def clone(self):
-        # dict(self.attrs) needed to create a copy of self.attrs
-        return W_NormalObject(dict(self.attrs))
-
-    def clone(self):
         a = W_NormalObject()
         a.attrs = dict(self.attrs)
         a.parents = list(self.parents)
@@ -51,7 +41,7 @@ class W_NormalObject(object):
 
 class W_Integer(W_NormalObject):
     def __init__(self, value):
-        self.value = value
+        self.value = int(value)
         self.parent = None
 
     def setvalue(obj, name, value):
@@ -69,13 +59,14 @@ class W_Integer(W_NormalObject):
     def getparents(self):
         return [self.parent]
 
+
 class W_Boolean(W_NormalObject):
     def __init__(self, value):
         self.value = value
         self.parent = None
 
     def setvalue(obj, name, value):
-        pass  
+        pass
 
     def getvalue(self, name):
         return None
@@ -99,8 +90,8 @@ class W_Boolean(W_NormalObject):
             return False
 
     def simplexor(self, param):
-        if ((self.value and not(param)) or 
-            (not(self.value) & param)):
+        if ((self.value and not(param)) or
+           (not(self.value) & param)):
             return True
         else:
             return False
@@ -110,6 +101,7 @@ class W_Boolean(W_NormalObject):
 
     def getparents(self):
         return [self.parent]
+
 
 class W_Float(W_NormalObject):
     def __init__(self, value):
@@ -130,6 +122,7 @@ class W_Float(W_NormalObject):
 
     def getparents(self):
         return [self.parent]
+
 
 class W_String(W_NormalObject):
     def __init__(self, value):
@@ -166,6 +159,7 @@ class W_String(W_NormalObject):
     def getparents(self):
         return [self.parent]
 
+
 class W_KeyValue(W_NormalObject):
     def __init__(self, key, value):
         self.key = key
@@ -173,7 +167,7 @@ class W_KeyValue(W_NormalObject):
         self.parent = None
 
     def setvalue(obj, name, value):
-        pass  
+        pass
 
     def getvalue(self, name):
         return None
@@ -182,10 +176,11 @@ class W_KeyValue(W_NormalObject):
         return (self.key is not None) & (self.value is not None)
 
     def clone(self):
-        return W_KeyValue(self.key,self.value)
+        return W_KeyValue(self.key, self.value)
 
     def getparents(self):
         return [self.parent]
+
 
 class W_List(W_NormalObject):
     def __init__(self, elements):
@@ -212,11 +207,15 @@ class W_List(W_NormalObject):
         except IndexError:
             raise IndexError("Provided Index does not exist!")
 
+    def clear(self):
+        self.elements = []
+
     def clone(self):
         return W_List(self.elements)
 
     def getparents(self):
         return [self.parent]
+
 
 class W_Dict(W_NormalObject):
     def __init__(self, elements):
@@ -269,6 +268,7 @@ class W_Dict(W_NormalObject):
 
     def getparents(self):
         return [self.parent]
+
 
 class W_Method(W_NormalObject):
     def __init__(self, ast_method):

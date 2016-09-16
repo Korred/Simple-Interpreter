@@ -1,10 +1,8 @@
-import py
-
 from simpleparser import parse
-from simplelexer import lex
 from interpreter import Interpreter
 from simpleast import *
 from objmodel import W_String
+
 
 def test_string_object():
     w1 = W_String("string")
@@ -13,6 +11,7 @@ def test_string_object():
     assert w2.value == "gnirts"
     assert w1.value == w2.reverse()
     assert w1.append(W_String(w2.reverse())) == "stringstring"
+
 
 def test_interpreter_string_append():
     ast = parse("""
@@ -39,6 +38,7 @@ abcde = abc append(de)
     assert w_module.getvalue("de").value == "2016"
     assert w_module.getvalue("abcde").value == "dynlang 2016"
 
+
 def test_interpreter_string_length():
     ast = parse("""
 a = "string"
@@ -58,6 +58,7 @@ ld = d len
     assert w_module.getvalue("lc").value == 0
     assert w_module.getvalue("ld").value == 1
 
+
 def test_interpreter_string_special_signs():
     ast = parse("""
 a = "{[ <'string'> ]}"
@@ -70,6 +71,7 @@ la = a len
     assert w_module.getvalue("la").value == 16
     assert w_module.getvalue("a").value == "{[ <'string'> ]}"
     assert w_module.getvalue("b").value == "?!§$%&&%&1234[]{]}"
+
 
 def test_interpreter_builtin_string():
     ast = parse("""
@@ -88,9 +90,10 @@ arevrev = a reverse reverse
     assert w_module.getvalue("arev").value == "gnalnyd"
     assert w_module.getvalue("brev").value == "dynlang"
     assert w_module.getvalue("emptyrev").value == ""
-    assert w_module.getvalue("equal1").value == True
-    assert w_module.getvalue("equal2").value == True
+    assert w_module.getvalue("equal1").value is True
+    assert w_module.getvalue("equal2").value is True
     assert w_module.getvalue("arevrev").value == "dynlang"
+
 
 def test_interpreter_string_logic():
     ast = parse("""
@@ -109,8 +112,8 @@ if s equals('123'):
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("dict").getelement('a').value == "test123"
-    assert w_module.getvalue("bool").value == True
+    assert w_module.getvalue("bool").value is True
     assert w_module.getvalue("srev").value == "test123"
-    assert w_module.getvalue("b1").value == True
-    assert w_module.getvalue("b2").value == True
-    assert w_module.getvalue("b3") == None
+    assert w_module.getvalue("b1").value is True
+    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b3") is None

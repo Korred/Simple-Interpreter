@@ -1,8 +1,6 @@
-import py
-
 from simpleparser import parse
-from objmodel import W_NormalObject
 from interpreter import Interpreter
+
 
 def test_primitive():
     ast = parse("""
@@ -15,6 +13,7 @@ b = 10 $int_add(10,10,10)
     assert w_module.getvalue("a").value == 41
     assert w_module.getvalue("b").value == 40
 
+
 def test_primitive_mul():
     ast = parse("""
 k = 3 $int_mul(4,6)
@@ -23,6 +22,7 @@ k = 3 $int_mul(4,6)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("k").value == 72
+
 
 def test_primitive_div():
     ast = parse("""
@@ -51,4 +51,3 @@ y = f(100)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("y").value == 5050
-

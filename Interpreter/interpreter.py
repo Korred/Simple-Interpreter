@@ -1,15 +1,14 @@
-import py
 import operator
 from simpleparser import parse
-from objmodel import W_Integer, W_Method, W_NormalObject, W_Float, W_List, W_String, W_KeyValue, W_Dict, W_Boolean
+from objmodel import W_Integer, W_Method, W_NormalObject
+from objmodel import W_Float, W_List, W_String, W_KeyValue, W_Dict, W_Boolean
 import default_builtins
-import pdb
 from math import floor, ceil
 
 
 class Interpreter(object):
 
-    def __init__(self,builtincode=None):
+    def __init__(self, builtincode=None):
         self.builtin = builtincode
 
     def eval(self, ast, w_context):
@@ -72,7 +71,7 @@ class Interpreter(object):
         return res
 
     def eval_KeyValueLiteral(self, ast, w_context):
-        return W_KeyValue(ast.key,ast.value)
+        return W_KeyValue(ast.key, ast.value)
 
     def eval_IfStatement(self, ast, w_context):
         # or if else statement instead of try/except
@@ -91,31 +90,32 @@ class Interpreter(object):
             # check mro
             for i in w_context.getc3():
                 m = i.getvalue(ast.methodname)
-                i_name = i
                 if m:
                     break
 
             if m.__class__.__name__ == "W_Method":
                 m = m.clone()
-                zipped_args = dict(zip(m.attrs["args"],ast.arguments))
+                zipped_args = dict(zip(m.attrs["args"], ast.arguments))
                 for key in zipped_args:
-                    if zipped_args[key].__class__.__name__ not in ["W_Integer", "W_Float", "W_Method", "W_NormalObject", "W_String", "W_Boolean"]:
+                    names = ["W_Integer", "W_Float", "W_Method",
+                             "W_NormalObject", "W_String", "W_Boolean"]
+
+                    if zipped_args[key].__class__.__name__ not in names:
                         zipped_args[key] = self.eval(zipped_args[key], w_context)
                 m.attrs.update(zipped_args)
                 res = self.eval(m.method, m)
 
                 return res
-            elif m.__class__.__name__ in ("IntLiteral","FloatLiteral","StringLiteral","BoolLiteral"):
+            elif m.__class__.__name__ in ("IntLiteral", "FloatLiteral", "StringLiteral", "BoolLiteral"):
                 res = self.eval(m, w_context)
                 return res
             else:
                 return m
-            
         else:
             # different receiver of methodcall
             rec = self.eval(ast.receiver, w_context)
             # eval receiver object
-            if rec.__class__.__name__ in ("W_List","W_Dict","W_Integer","W_Float","W_String","W_Boolean"):
+            if rec.__class__.__name__ in ("W_List", "W_Dict", "W_Integer", "W_Float", "W_String", "W_Boolean"):
                 for i in w_context.getc3():
                     if (rec.__class__.__name__ == "W_Dict"):
                         ctx = i.getvalue("dicttrait")
@@ -140,11 +140,11 @@ class Interpreter(object):
                     for p in ast.arguments:
                         # eval arguments as receiver later is different
                         # check whether W_Method can be reached here
-                        if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Float", "W_Method", "W_String", "W_Boolean"]:
+                        names = ["W_Integer", "W_Float", "W_Method",
+                                 "W_NormalObject", "W_String", "W_Boolean"]
+                        if p.__class__.__name__ in names:
                             params.append(p)
                         else:
-                            # it might be necessary to handle different edge cases here
-                            # or maybe not... should be tested accordingly
                             res = self.eval(p, w_context)
                             params.append(res)
 
@@ -159,9 +159,7 @@ class Interpreter(object):
 
                 elif m.__class__.__name__ in ("W_Integer", "W_Float", "W_String", "W_Boolean"):
                     return m
-                    
             # getting receiver from w_context
-            
             # get method by methodname from receiver rec
             for i in rec.getc3():
                 m = i.getvalue(ast.methodname)
@@ -177,8 +175,6 @@ class Interpreter(object):
                     if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Method"]:
                         params.append(p)
                     else:
-                        # it might be necessary to handle different edge cases here
-                        # or maybe not... should be tested accordingly
                         res = self.eval(p, w_context)
                         params.append(res)
 
@@ -231,7 +227,7 @@ class Interpreter(object):
         # if No bultin provided -> use default buildins
         if self.builtin is None:
             builtin_module = W_NormalObject()
-            self.eval(parse(default_builtins.builtin),builtin_module)
+            self.eval(parse(default_builtins.builtin), builtin_module)
             w_module = W_NormalObject()
             w_module.setvalue("__parent__", builtin_module)
             return w_module
@@ -240,8 +236,8 @@ class Interpreter(object):
             # create builtin module
             builtin_module = W_NormalObject()
             # parse and eval builtin code
-            self.eval(parse(self.builtin),builtin_module)
-            # new module with the builtin module as its parent
+            self.eval(parse(self.builtin), builtin_module)
+            # set new module with the builtin module as its parent
             w_module = W_NormalObject()
             w_module.setvalue("__parent__", builtin_module)
             return w_module
@@ -257,18 +253,18 @@ class Interpreter(object):
             l = self.eval(ast.receiver, w_context)
             key = self.eval(ast.arguments[0], w_context)
             value = self.eval(ast.arguments[1], w_context)
-            l.addelement(key,value)
-       
+            l.addelement(key, value)
+
         if ast.methodname == "$dict_get_keys":
             l = self.eval(ast.receiver, w_context)
             return l.getkeys()
 
-        if ast.methodname in ("$list_del","$dict_del"):
+        if ast.methodname in ("$list_del", "$dict_del"):
             l = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value
             l.delelement(param)
 
-        if ast.methodname in ("$list_len","$dict_len"):
+        if ast.methodname in ("$list_len", "$dict_len"):
             l = self.eval(ast.receiver, w_context)
             return W_Integer(l.length)
 
@@ -295,20 +291,24 @@ class Interpreter(object):
             s2 = self.eval(ast.arguments[0], w_context)
             return W_Boolean(s.equals(s2))
 
-        if ast.methodname in ("$list_get","$dict_get"):
+        if ast.methodname in ("$list_get", "$dict_get"):
             l = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value
             return l.getelement(param)
-        
+
+        if ast.methodname == "$list_clear":
+            l = self.eval(ast.receiver, w_context)
+            l.clear()
+
         if ast.methodname == "$boolean_not":
             b = self.eval(ast.receiver, w_context)
             return W_Boolean(b.simplenot())
-        
+
         if ast.methodname == "$boolean_and":
             b = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value
             return W_Boolean(b.simpleand(param))
-        
+
         if ast.methodname == "$boolean_or":
             b = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value
@@ -323,27 +323,56 @@ class Interpreter(object):
         if ast.methodname in ("$ceil", "$floor"):
             param = self.eval(ast.arguments[0], w_context)
             val = param.value
+
             if ast.methodname == "$floor":
                 if param.__class__.__name__ == "W_Float":
-                    return W_Float(float(floor(val)))
+                    return W_Float(floor(val))
                 else:
                     return W_Integer(floor(val))
+
             if ast.methodname == "$ceil":
                 if param.__class__.__name__ == "W_Float":
-                    return W_Float(float(ceil(val)))
+                    return W_Float(ceil(val))
                 else:
                     return W_Integer(ceil(val))
 
+        if ast.methodname in ("$to_int", "$to_float", "$to_str"):
+            param = self.eval(ast.arguments[0], w_context)
+            val = param.value
 
-        if "int" in ast.methodname or "float" in ast.methodname:
-        # Flags necessary to decide whether to return a float or an int
+            if ast.methodname == "$to_int":
+                if param.__class__.__name__ in ("W_Float", "W_Integer"):
+                    return W_Integer(int(val))
+                if param.__class__.__name__ == "W_String":
+                    try:
+                        return W_Integer(int(val))
+                    except ValueError:
+                        raise ValueError('Provided String cannot be parsed to Integer')
+
+            if ast.methodname == "$to_float":
+                if param.__class__.__name__ in ("W_Float", "W_Integer"):
+                    return W_Float(float(val))
+                if param.__class__.__name__ == "W_String":
+                    try:
+                        return W_Float(float(val))
+                    except ValueError:
+                        raise ValueError('Provided String cannot be parsed to Float')
+
+            if ast.methodname == "$to_str":
+                if param.__class__.__name__ in ("W_Float", "W_Integer", "W_String"):
+                    try:
+                        return W_String(str(val))
+                    except ValueError:
+                        raise ValueError('Provided Type cannot be parsed to String')
+
+        if "int_" in ast.methodname or "float_" in ast.methodname:
+            # Flags necessary to decide whether to return a float or an int
             l = self.eval(ast.receiver, w_context)
             l_flag = False
             r_flag = False
             if l.__class__.__name__ == "W_Float":
                 l_flag = True
             l = l.value
-
 
             # add/sub/mul/div logic
             if ast.methodname in ("$int_add", "$float_add"):
@@ -354,10 +383,6 @@ class Interpreter(object):
                 op = operator.mul
             elif ast.methodname in ("$int_div", "$float_div"):
                 op = operator.truediv
-
-            
-            # Flags necessary to decide whether to return a float or an int
-
 
             for e in ast.arguments:
                 r = self.eval(e, w_context)

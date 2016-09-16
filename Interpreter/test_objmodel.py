@@ -11,6 +11,7 @@ def test_normalobject():
     # a missing attribute...
     assert w1.getvalue('bcd') is None
 
+
 def test_integer():
     w1 = W_Integer(5)
     assert w1.value == 5
@@ -18,12 +19,14 @@ def test_integer():
     # so getvalue() returns None.
     assert w1.getvalue('abc') is None
 
+
 def test_istrue():
     assert W_Integer(5).istrue() is True
     assert W_Integer(0).istrue() is False
     assert W_Integer(-1).istrue() is True
     # for now, only W_Integer(0) is false; all the other objects are true.
     assert W_NormalObject().istrue() is True
+
 
 def test_clone():
     w1 = W_NormalObject()

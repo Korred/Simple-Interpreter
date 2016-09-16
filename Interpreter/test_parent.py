@@ -1,8 +1,8 @@
 import py
 
 from simpleparser import parse
-from objmodel import W_NormalObject
 from interpreter import Interpreter
+
 
 def test_implicit_parent():
     ast = parse("""
@@ -20,6 +20,7 @@ az = a z
     assert w_module.getvalue("a").getparents() == [w_module]
     assert w_module.getvalue("az").value == 10
 
+
 def test_implicit_parent_method():
     ast = parse("""
 k = 10
@@ -36,6 +37,7 @@ f0 = f(0)
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("f1").value == 10
     assert w_module.getvalue("f0").value == 1
+
 
 def test_shadow_parent_attribute():
     ast = parse("""
@@ -59,6 +61,7 @@ ak = a k
     assert w_module.getvalue("f0").value == 10
     assert w_module.getvalue("ak").value == 11
     assert w_module.getvalue("k").value == 10
+
 
 def test_capture():
     ast = parse("""
@@ -107,6 +110,7 @@ bz = b z
     assert w_module.getvalue("by").value == 5
     assert w_module.getvalue("bz").value == 5
 
+
 def test_parent_syntax():
     ast = parse("""
 object a:
@@ -128,6 +132,7 @@ bf = b x
     assert b.getparents() == [a, w_module]
     assert w_module.getvalue("af").value == 11
     assert w_module.getvalue("bf").value == 22
+
 
 def test_parent_syntax_multiple():
     ast = parse("""
@@ -168,6 +173,7 @@ zd = z d
     assert w_module.getvalue("zc").value == 8
     assert w_module.getvalue("zd").value == 10
 
+
 def test_wrong_hierarchy_error():
     ast = parse("""
 object base:
@@ -184,6 +190,7 @@ result = mayhem
     w_module = interpreter.make_module()
     py.test.raises(TypeError, interpreter.eval, ast, w_module)
 
+
 def test_duplicate_base_error():
     ast = parse("""
 object base:
@@ -195,4 +202,3 @@ y = sub x
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     py.test.raises(TypeError, interpreter.eval, ast, w_module)
-

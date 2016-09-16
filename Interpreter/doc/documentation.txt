@@ -1,0 +1,109 @@
+#################################################
+Changes done to simple language after exercise 9:
+#################################################
+
+Changes done to LEXER:
+
+- Changed regexp of Numbers (int) to be compatible with floats
+- Added regexp and token for Floats
+- Added new regexps and tokens for lists and maps/dicts
+	- ListOpenBracket
+	- ListCloseBracket
+	- MapOpenBracket
+	- MapCloseBracket
+- Added regexp and token for booleans (True|False)
+
+
+Changes done to AST:
+
+- Added FloatLiteral (1.2, -0.002, +1.337)
+	- normalizes cases of -0.0* and +0.0* to 0.0
+
+- Added ListLiteral
+	- supports any given elements (list of lists/dicts/string/ints/floats/booleans)
+	- even supports lists with mixed element types eg.
+		[int,float,string,list,dict,boolean] is a valid list
+
+- Added StringLiteral
+- Added KeyValueLiteral (key:value)
+	- dictionaries are indexed by keys, which can be the immutable types string and number(int/float)
+	- values on the other hand can be choosen from all available types - int/float/string/list/dict/boolean
+	- supports dicts with mixed key-value pair types eg.
+		- "a":1 (string:int)
+		- 4:"a" (int:string)
+		- 1:4.3 (int:float)
+
+- Added BoolLiteral (True/False)
+
+
+
+
+Added Built-ins:
+"A function that is built into an application and can be accessed by end-users"
+
+Built-ins are either written using Python (see interpreter code - eval_PrimitiveMethodCall) or using already available built-in functions and constructs.
+
+INTEGER/FLOAT:
+	
+	The result of arithmetic operations where mixed numeric types are used eg. int and float, will always be of type float.
+
+	- add(x): Add a number x (int/float)
+	Example: sum = 5 add(5)
+
+	- sub(x): Substract a number x (int/float)
+	Example: dif = 5 sub(5)
+
+	- mul(x): Multiply a number x (int/float)
+	Example: prod = 5 mul(5)
+
+	- div(x): Divide a number x (int/float)
+	Example: quot = 5 div(5)
+
+	- to_int(x): Parse 
+
+STRING:
+	- len: Returns length of string
+	Example:
+
+	- append(x): Append string x to string (appending a number does not convert number to string implicitly)
+	Example:
+
+	- reverse: Returns reversed version of string - keeps original string untouched
+	Example:
+
+	- equals(x): Checks whether two strings are equal - returns boolean (TRUE/FALSE)
+	Example:
+
+LISTS:
+	- add(x): Add element x to list
+	Example:
+
+	- del(x): Remove element at pos x from list
+	Example:
+
+	- get(x): Get element at pos x from list
+	Example:
+
+	- len: Get length of list
+	Example:
+
+	- reverse: Returns reversed version of list - keeps original list untouched
+	Example:
+
+	- oreverse: Returns reversed version of list - original list is modified
+	Example:
+
+	- append(x): Appends list x to left side
+	Example:
+
+	- clear: Clears list/Removes all stored elements
+	Example:
+
+BOOLEAN:
+	- not:
+	- and(x):
+	- or(x):
+	- nand(x):
+	- nor(x):
+	- xor(x):
+	- xnor(x):

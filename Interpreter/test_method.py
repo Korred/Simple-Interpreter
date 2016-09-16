@@ -1,8 +1,6 @@
-import py
-
 from simpleparser import parse
-from objmodel import W_NormalObject
 from interpreter import Interpreter
+
 
 def test_method_simple():
     ast = parse("""

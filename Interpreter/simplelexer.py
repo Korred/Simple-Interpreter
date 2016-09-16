@@ -33,6 +33,7 @@ def make_single_string(delim):
     return "".join([delim, normal_chars,
                     any(r"\\." + normal_chars), delim])
 
+
 String = group(make_single_string(r"\'"), make_single_string(r'\"'))
 
 # ____________________________________________________________
@@ -87,6 +88,7 @@ def make_lexer():
         lg.add(token, globals()[token])
     return lg.build()
 
+
 lexer = make_lexer()
 
 tabsize = 4
@@ -106,7 +108,8 @@ def postprocess(tokens, source):
         elif token.name == "CloseBracket":
             parenthesis_level -= 1
             if parenthesis_level < 0:
-                raise LexerError(source, token.source_pos, "unmatched parenthesis")
+                err = "unmatched parenthesis"
+                raise LexerError(source, token.source_pos, err)
             output_tokens.append(token)
         elif token.name == "Indent":
             if i + 1 < len(tokens) and tokens[i + 1].name == "Indent":
@@ -135,7 +138,9 @@ def postprocess(tokens, source):
                     pos = pos + 1
                 # split the token in two: one for the newline and one for the
                 # in/dedent
-                output_tokens.append(Token("Newline", s[:start], token.source_pos))
+                output_tokens.append(Token("Newline",
+                                           s[:start],
+                                           token.source_pos))
                 if column > indentation_levels[-1]:  # count indents or dedents
                     indentation_levels.append(column)
                     token.name = "Indent"
@@ -149,7 +154,9 @@ def postprocess(tokens, source):
                     while column < indentation_levels[-1]:
                         dedented = True
                         indentation_levels.pop()
-                        output_tokens.append(Token("Dedent", "", token.source_pos)) 
+                        output_tokens.append(Token("Dedent",
+                                                   "",
+                                                   token.source_pos))
                     if dedented:
                         token.name = "Dedent"
                         token.value = s[start:]

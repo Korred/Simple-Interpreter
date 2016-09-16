@@ -1,5 +1,3 @@
-import py
-
 from simpleparser import parse
 from objmodel import W_NormalObject
 from interpreter import Interpreter
@@ -16,6 +14,7 @@ from interpreter import Interpreter
 # called Xxx of the simpleast.py module.
 #
 
+
 def test_simple():
     ast = parse("""
 k = 10
@@ -28,6 +27,7 @@ i = 12
     assert w_module.getvalue("i").value == 12
     assert w_module.getvalue("j").value == 11
     assert w_module.getvalue("k").value == 10
+
 
 def test_if():
     ast = parse("""
@@ -44,6 +44,7 @@ else:
     assert w_module.getvalue("i") is None
     assert w_module.getvalue("j").value == 11
     assert w_module.getvalue("k").value == 10
+
 
 def test_custom_if():
     ast = parse("""

@@ -1,5 +1,3 @@
-# things to change - 
-
 builtin = """
 object inttrait:
     def add(x):
@@ -53,7 +51,22 @@ object listtrait:
     def len:
         self $list_len
 
-    # Todo(?): reverse list
+    def reverse:
+        # original list is left untouched
+        l = self len
+        rev = []
+        while l:
+            l = l sub(1)
+            c = self get(l)
+            rev add(c)
+        rev
+
+    def oreverse:
+        # modifies original list
+        x = self reverse
+        self clear
+        self append(x)
+        self
 
     def append(x):
         l = x len
@@ -64,6 +77,10 @@ object listtrait:
             l = l sub(1)
             i = i add(1)
         self
+
+    def clear:
+        self $list_clear
+
 
 object booltrait:
     def not:
@@ -85,7 +102,7 @@ object booltrait:
         self $boolean_xor(x)
 
     def xnor(x):
-        self xor(x) not    
+        self xor(x) not
 
 object dicttrait:
     def add(x,y):
@@ -113,7 +130,7 @@ def to_float(x):
     $to_float(x)
 
 def to_str(x):
-    $to_str(x) 
+    $to_str(x)
 
 def ceil(x):
     $ceil(x)
@@ -143,8 +160,6 @@ def e_range(x,y):
         s = s add(1)
         k = k sub(1)
     r
-
-
 
 def fibonacci_iter(x):
     a = 0

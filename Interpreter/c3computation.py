@@ -23,6 +23,7 @@ c.addparent(a)
 c.addparent(b)
 '''
 
+
 def mro(obj, path=None):
     # path that can be used to check whether circles exist
     if path is None:
@@ -51,7 +52,7 @@ def mro(obj, path=None):
             # check all tails [1:] if candidate in tails
             for s in non_empty:
                 if candidate in s[1:]:
-                    # canidate was found in tail - 
+                    # canidate was found in tail -
                     candidate = None
                     break
 
@@ -60,7 +61,9 @@ def mro(obj, path=None):
                 break
 
         if not candidate:
-            raise TypeError("no method order resolution found - ambiguous hierarchies detected")
+            err = '''no method order resolution found -
+             ambiguous hierarchies detected'''
+            raise TypeError(err)
 
         result.append(candidate)
         for seq in sequences:

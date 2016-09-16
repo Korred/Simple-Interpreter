@@ -1,5 +1,3 @@
-import py
-
 from simpleparser import parse
 from simplelexer import lex
 from interpreter import Interpreter
@@ -7,10 +5,6 @@ from simpleast import *
 from objmodel import W_Float, W_Integer
 
 # Lexer Tests
-
-
-def test_lex_float_regexp():
-    pass
 
 
 def test_lex_float():
@@ -26,21 +20,14 @@ def test_par_float():
     pass
 
 
-# AST Tests
-
-
-def test_ast_float():
-    pass
-
-
 # objmodel Tests
 
 
 def test_obj_float():
     w1 = W_Float(5.0)    # should be a float
     w2 = W_Integer(5.0)  # should be an int
-    assert w1.value == 5.0
-    assert w2.value == 5
+    assert isinstance(w1.value, float)
+    assert isinstance(w2.value, int)
     # W_Float objects cannot have custom attributes,
     # so getvalue() returns None.
     assert w1.getvalue('abc') is None
@@ -69,6 +56,7 @@ f = 5.555555555555555555555550000
     assert w_module.getvalue("e").value == -5.5
     assert w_module.getvalue("f").value == 5.55555555555555555555555
 
+
 def test_float_primitives():
     ast = parse("""
 x = 10
@@ -87,7 +75,8 @@ dif2 = x sub(y)
 prod2 = x mul(y)
 quot2 = x div(y)
 """)
-    # the constructor is called without arguments, so the default builtins are used
+    # the constructor is called without arguments
+    # so the default builtins are used instead
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
@@ -101,6 +90,7 @@ quot2 = x div(y)
     assert w_module.getvalue("dif2").value == -8.0
     assert w_module.getvalue("prod2").value == 20.0
     assert w_module.getvalue("quot2").value == 0.2
+
 
 def test_float_if():
     ast = parse("""
@@ -119,6 +109,7 @@ if y:
     assert w_module.getvalue("x").value == 0.0
     assert w_module.getvalue("y").value == 2.0
 
+
 def test_float_floor_ceil():
     ast = parse("""
 x = 5.5
@@ -134,5 +125,4 @@ ci = ceil(y)
 
     assert w_module.getvalue("ff").value == 5.0
     assert w_module.getvalue("cf").value == 6.0
-    print(w_module.getvalue("ff").value, w_module.getvalue("cf").value)
-    print(w_module.getvalue("fi").value, w_module.getvalue("ci").value)
+    assert w_module.getvalue("fi").value == w_module.getvalue("ci").value == 5

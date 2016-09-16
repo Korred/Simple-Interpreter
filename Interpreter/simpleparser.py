@@ -1,10 +1,10 @@
 # A 'simple' parser.
-# Follows PEP 8 but ignores E501 (line too long)
+# Follows PEP 8 and enforces E501 (line too long)
+# Ignore error 'redifinition of unused statement' as different producion rules
+# use names for defs that were already defined - totally fine here..
 
-import py
 import simpleast
 from simplelexer import lex
-from rply.token import Token
 from rply import ParserGenerator
 
 tkns = ["If", "Else", "While", "Def", "Object", "Number", "Boolean",
@@ -167,13 +167,16 @@ def number_expression(stmt):
 def float_expression(stmt):
     return simpleast.FloatLiteral(stmt[0].value)
 
+
 @pg.production("basic_expression : String")
 def string_expression(stmt):
     return simpleast.StringLiteral(stmt[0].value)
 
+
 @pg.production("basic_expression : Boolean")
 def boolean_expression(stmt):
     return simpleast.BoolLiteral(stmt[0].value)
+
 
 @pg.production("basic_expression : ListOpenBracket ListCloseBracket")
 @pg.production("basic_expression : ListOpenBracket arguments ListCloseBracket")
@@ -184,24 +187,37 @@ def list_expression(args):
         args = args[1]
     return simpleast.ListLiteral(args)
 
+
 @pg.production("basic_expression : MapOpenBracket MapCloseBracket")
 @pg.production("basic_expression : MapOpenBracket arguments MapCloseBracket")
 def dict_expression(args):
+    # args explained
+    # args[0] = Token('MapOpenBracket', '{')
+    # args[1] list of "arguments" here KeyValueLiterals
+    # args[2] = Token('MapCloseBracket', '}')
     if len(args) < 3:
         args = None
     else:
         args = args[1]
     return simpleast.DictLiteral(args)
 
+
 @pg.production("basic_expression : Number Colon basic_expression")
 def key_value_expression(args):
-    return simpleast.KeyValueLiteral(simpleast.IntLiteral(args[0].value),args[2])
+    return simpleast.KeyValueLiteral(
+        simpleast.IntLiteral(args[0].value), args[2])
+
+
 @pg.production("basic_expression : String Colon basic_expression")
 def key_value_expression(args):
-    return simpleast.KeyValueLiteral(simpleast.StringLiteral(args[0].value),args[2])
+    return simpleast.KeyValueLiteral(
+        simpleast.StringLiteral(args[0].value), args[2])
+
+
 @pg.production("basic_expression : Float Colon basic_expression")
 def key_value_expression(args):
-    return simpleast.KeyValueLiteral(simpleast.FloatLiteral(args[0].value),args[2])
+    return simpleast.KeyValueLiteral(
+        simpleast.FloatLiteral(args[0].value), args[2])
 
 
 @pg.production("basic_expression : implicitselfmethodcall")
@@ -271,8 +287,11 @@ def name(name):
 def error_handler(token):
     raise ParseError(
         source_pos=token.getsourcepos(),
-        errorinformation=ErrorInformation(token.getsourcepos().idx,
-            customerror="Ran into a %s where it wasn't expected" % token.gettokentype()))
+        errorinformation=ErrorInformation(
+            token.getsourcepos().idx,
+            customerror="Ran into a %s where it wasn't expected"
+            % token.gettokentype()))
+
 
 parser = pg.build()
 
@@ -286,6 +305,7 @@ def print_conflicts():
     for conf in parser.lr_table.sr_conflicts:
         print(conf)
 
+
 print_conflicts()
 
 
@@ -294,7 +314,8 @@ def parse(s):
     print("Starting Parser on: ", l)
     return parser.parse(iter(l))
 
-# ____________________________________________________________
+# ____________________________________________________________ #
+
 
 class ParseError(Exception):
     def __init__(self, source_pos, errorinformation, source=""):
@@ -304,7 +325,7 @@ class ParseError(Exception):
         self.source = source
 
     def nice_error_message(self, filename="<unknown>"):
-        result = ["  File %s, line %s" % (filename, self.source_pos.lineno + 1)]
+        result = [" File %s, line %s" % (filename, self.source_pos.lineno + 1)]
         source = self.source
         if source:
             result.append(source.split("\n")[self.source_pos.lineno])
@@ -345,8 +366,7 @@ class ErrorInformation(object):
 def combine_errors(self, other):
     if self is None:
         return other
-    if (other is None or self.pos > other.pos or
-        len(other.expected) == 0):
+    if (other is None or self.pos > other.pos or len(other.expected) == 0):
         return self
     elif other.pos > self.pos or len(self.expected) == 0:
         return other

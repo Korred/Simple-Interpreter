@@ -1,10 +1,7 @@
-import py
-
 from simpleparser import parse
 from simplelexer import lex
 from interpreter import Interpreter
 from simpleast import *
-from objmodel import W_Float, W_Integer
 
 # Lexer Tests
 
@@ -12,31 +9,61 @@ from objmodel import W_Float, W_Integer
 def test_lex_list_int():
     s = "[1,2,3,4,5,6]"
     tokens = lex(s)
-    print([t.name for t in tokens])
+    x = ["ListOpenBracket", "Number", "Comma",
+         "Number", "Comma", "Number", "Comma",
+         "Number", "Comma", "Number", "Comma",
+         "Number", "ListCloseBracket", "Newline",
+         "EOF"]
+    for i, t in enumerate(tokens):
+        assert t.name == x[i]
 
 
 def test_lex_list_float():
     s = "[1.0,-2.0,3.123,0.0000,-5.125,-0.000]"
     tokens = lex(s)
-    print([t.name for t in tokens])
+    x = ["ListOpenBracket", "Float", "Comma",
+         "Float", "Comma", "Float", "Comma",
+         "Float", "Comma", "Float", "Comma",
+         "Float", "ListCloseBracket", "Newline",
+         "EOF"]
+    for i, t in enumerate(tokens):
+        assert t.name == x[i]
 
 
 def test_lex_list_string():
     s = """["a","v","z",'i','j','choochoo']"""
     tokens = lex(s)
-    print([t.name for t in tokens])
+    x = ["ListOpenBracket", "String", "Comma",
+         "String", "Comma", "String", "Comma",
+         "String", "Comma", "String", "Comma",
+         "String", "ListCloseBracket", "Newline",
+         "EOF"]
+    for i, t in enumerate(tokens):
+        assert t.name == x[i]
 
 
 def test_lex_list_mixed():
     s = """[1,2,3.0,-4.2,'2',"abc"]"""
     tokens = lex(s)
-    print([t.name for t in tokens])
+    x = ["ListOpenBracket", "Number", "Comma",
+         "Number", "Comma", "Float", "Comma",
+         "Float", "Comma", "String", "Comma",
+         "String", "ListCloseBracket", "Newline",
+         "EOF"]
+    for i, t in enumerate(tokens):
+        assert t.name == x[i]
 
 
 def test_lex_list_in_list():
     s = """[[1,2,3],[4,5,6]]"""
     tokens = lex(s)
-    print([t.name for t in tokens])
+    x = ["ListOpenBracket", "ListOpenBracket", "Number",
+         "Comma", "Number", "Comma", "Number", "ListCloseBracket",
+         "Comma", "ListOpenBracket", "Number", "Comma", "Number",
+         "Comma", "Number", "ListCloseBracket", "ListCloseBracket",
+         "Newline", "EOF"]
+    for i, t in enumerate(tokens):
+        assert t.name == x[i]
 
 # Parser Tests
 
@@ -50,14 +77,18 @@ def test_list_simple_expression():
 
 def test_list_simple_assignment():
     ast = parse("a = [1,2]")
-    res = Program([Assignment(ImplicitSelf(), 'a', ListLiteral([IntLiteral(1), IntLiteral(2)]))])
+    res = Program([Assignment(
+        ImplicitSelf(),
+        'a',
+        ListLiteral([IntLiteral(1), IntLiteral(2)]))])
 
     assert ast == res
 
 
 def test_list_simple_primitive():
     ast = parse("[1] $add(2)")
-    res = Program([ExprStatement(PrimitiveMethodCall(ListLiteral([IntLiteral(1)]), '$add', [IntLiteral(2)]))])
+    res = Program([ExprStatement(PrimitiveMethodCall(
+        ListLiteral([IntLiteral(1)]), '$add', [IntLiteral(2)]))])
 
     assert ast == res
 
@@ -80,17 +111,18 @@ b = [-1.555,0.0,+1.5,5]
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     for i in range(4):
-        assert w_module.getvalue("a").elements[i].value == i+1
+        assert w_module.getvalue("a").elements[i].value == i + 1
 
-    assert type(w_module.getvalue("b").elements[0].value) == type(-1.555)
-    assert type(w_module.getvalue("b").elements[1].value) == type(0.0)
-    assert type(w_module.getvalue("b").elements[2].value) == type(+1.5)
-    assert type(w_module.getvalue("b").elements[3].value) == type(5)
+    assert isinstance(w_module.getvalue("b").elements[0].value, float)
+    assert isinstance(w_module.getvalue("b").elements[1].value, float)
+    assert isinstance(w_module.getvalue("b").elements[2].value, float)
+    assert isinstance(w_module.getvalue("b").elements[3].value, int)
 
     assert w_module.getvalue("b").elements[0].value == -1.555
     assert w_module.getvalue("b").elements[1].value == 0.0
     assert w_module.getvalue("b").elements[2].value == +1.5
     assert w_module.getvalue("b").elements[3].value == 5
+
 
 def test_list_length():
     ast = parse("""
@@ -106,18 +138,22 @@ l2 = a len
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("l1").value == 3
     assert w_module.getvalue("l2").value == 5
+    res = [1, 3, 4, 5, 6]
+    assert [a.value for a in w_module.getvalue("a").elements] == res
+
 
 def test_list_i_def():
     ast = parse("""
 def o:
+    # function that simply returns a list
     [1,2,3,4]
 a = o
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    for i in range(4):
-        assert w_module.getvalue("a").elements[i].value == i+1
+    res = list(range(1, 5))
+    assert [a.value for a in w_module.getvalue("a").elements] == res
 
 
 def test_list_i_inlist():
@@ -127,14 +163,19 @@ a = [[1,2,3,4],[5,6,7,8]]
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    assert [e.value for e in w_module.getvalue("a").elements[0].elements] == [1,2,3,4]
-    assert [e.value for e in w_module.getvalue("a").elements[1].elements] == [5,6,7,8]
+    a1 = [1, 2, 3, 4]
+    a2 = [5, 6, 7, 8]
+    assert [e.value for e in w_module.getvalue("a").elements[0].elements] == a1
+    assert [e.value for e in w_module.getvalue("a").elements[1].elements] == a2
 
 
 def test_list_i_add():
     ast = parse("""
 a = []
+# add int to list
 a add(1)
+
+# add list to list
 a add([1])
 """)
     interpreter = Interpreter()
@@ -156,10 +197,20 @@ c del(2) #last
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    assert [e.value for e in w_module.getvalue("a").elements] == [2,3]
-    assert [e.value for e in w_module.getvalue("b").elements] == [1,3]
-    assert [e.value for e in w_module.getvalue("c").elements] == [1,2]
-    assert w_module.getvalue("a").length == w_module.getvalue("b").length == w_module.getvalue("c").length == 2
+    assert [e.value for e in w_module.getvalue("a").elements] == [2, 3]
+    assert [e.value for e in w_module.getvalue("b").elements] == [1, 3]
+    assert [e.value for e in w_module.getvalue("c").elements] == [1, 2]
+
+
+def test_clear_list():
+    ast = parse("""
+a = [1,2,3,4,5]
+a clear
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("a").elements == []
 
 
 def test_list_i_append():
@@ -171,8 +222,8 @@ c = a append(b)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    for i in range(4):
-        assert w_module.getvalue("c").elements[i].value == i+1
+    res = list(range(1, 5))
+    assert [a.value for a in w_module.getvalue("c").elements] == res
 
 
 def test_list_i_range():
@@ -185,8 +236,9 @@ e = e_range(5,10)
     interpreter.eval(ast, w_module)
     for i in range(5):
         assert w_module.getvalue("s").elements[i].value == i
-    for i in range(5,10):
-        assert w_module.getvalue("e").elements[i-5].value == i
+    for i in range(5, 10):
+        assert w_module.getvalue("e").elements[i - 5].value == i
+
 
 def test_list_i_fibonacci():
     ast = parse("""
@@ -212,4 +264,52 @@ l = fib_list(6)
     interpreter.eval(ast, w_module)
 
     assert w_module.getvalue("f").value == 8
-    assert [e.value for e in w_module.getvalue("l").elements] == [0,1,1,2,3,5,8]
+    t = [0, 1, 1, 2, 3, 5, 8]
+    assert [e.value for e in w_module.getvalue("l").elements] == t
+
+
+def test_simple_rev_list():
+    ast = parse("""
+a = [1,2,3,4,5]
+rev = a reverse
+orev = a oreverse
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    t = [5, 4, 3, 2, 1]
+    assert [e.value for e in w_module.getvalue("rev").elements] == t
+    assert [e.value for e in w_module.getvalue("orev").elements] == t
+    assert [e.value for e in w_module.getvalue("a").elements] == t
+
+
+def test_mixed_rev_list():
+    ast = parse("""
+a = [1,"a",1.2,[1,2],{1:2}]
+rev = a reverse
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    l = w_module.getvalue("rev").elements
+    assert l[4].value == 1
+    assert l[3].value == "a"
+    assert l[2].value == 1.2
+    assert [a.value for a in l[1].elements] == [1, 2]
+    assert l[0].getelement(1).value == 2
+
+
+def test_variable_list():
+    ast = parse("""
+a = 1
+b = 2
+c = [3,4,5]
+d = [a,b,c]
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    x = w_module.getvalue("d").elements
+    assert x[0].value == 1
+    assert x[1].value == 2
+    assert [a.value for a in x[2].elements] == [3, 4, 5]

@@ -1,9 +1,7 @@
 import py
-
 from simpleparser import parse
-from objmodel import W_NormalObject
 from interpreter import Interpreter
-import pdb
+
 
 def test_builtin_simple():
     builtincode = """
@@ -31,6 +29,7 @@ ax = a x
     assert w_module.getvalue("ax").value == 1
     assert w_module.getvalue("tx").value == 1
 
+
 def test_inttrait():
     builtincode = """
 object inttrait:
@@ -57,8 +56,6 @@ tr = inttrait
 """)
     interpreter.eval(ast, w_module)
     x = w_module.getvalue("x")
-    print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
-    print(w_module.getvalue("tr"))
     assert w_module.getvalue("tr") is inttrait
     # the inttrait is defined in the builtin module, so its __parent__ is that
     # module
@@ -69,7 +66,7 @@ tr = inttrait
     assert w_module.getvalue("m1").value == 42
     assert w_module.getvalue("m2").value == 2
 
-    
+
 def test_builtin_default():
     ast = parse("""
 def sumupto(x):
@@ -87,3 +84,73 @@ x = sumupto(100)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
     assert w_module.getvalue("x").value == 5050
+
+
+def test_builtin_convert():
+    ast = parse("""
+a = 1
+b = 2.5
+c = "string"
+d = -1.5
+e = +2.2
+
+a1 = to_int(a)
+a2 = to_float(a)
+a3 = to_str(a)
+
+b1 = to_int(b)
+b2 = to_float(b)
+b3 = to_str(b)
+
+c1 = to_str(c)
+
+d1 = to_int(d)
+d2 = to_float(d)
+d3 = to_str(d)
+
+e1 = to_int(e)
+e2 = to_float(e)
+e3 = to_str(e)
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("a1").value == 1
+    assert w_module.getvalue("a2").value == 1.0
+    assert w_module.getvalue("a3").value == "1"
+
+    assert w_module.getvalue("b1").value == 2
+    assert w_module.getvalue("b2").value == 2.5
+    assert w_module.getvalue("b3").value == "2.5"
+
+    assert w_module.getvalue("c1").value == "string"
+
+    assert w_module.getvalue("d1").value == -1
+    assert w_module.getvalue("d2").value == -1.5
+    assert w_module.getvalue("d3").value == "-1.5"
+
+    assert w_module.getvalue("e1").value == 2
+    assert w_module.getvalue("e2").value == 2.2
+    assert w_module.getvalue("e3").value == "2.2"
+
+
+def test_builtin_convert_err_a():
+    ast = parse("""
+c = "string"
+c1 = to_int(c) # will not work
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    py.test.raises(ValueError, interpreter.eval, ast, w_module)
+
+
+def test_builtin_convert_err_b():
+    ast = parse("""
+c = "string"
+c2 = to_float(c) # will not work
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    py.test.raises(ValueError, interpreter.eval, ast, w_module)

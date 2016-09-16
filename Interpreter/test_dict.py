@@ -1,5 +1,3 @@
-import py
-
 from simpleparser import parse
 from simplelexer import lex
 from interpreter import Interpreter
@@ -11,42 +9,103 @@ from simpleast import *
 def test_lexer():
     s = "{'a':1,'b':2}"
     tokens = lex(s)
-    assert [t.name for t in tokens] == ['MapOpenBracket', 'String', 'Colon', 'Number', 'Comma', 'String', 'Colon', 'Number', 'MapCloseBracket', 'Newline', 'EOF']
+    res = ['MapOpenBracket', 'String', 'Colon',
+           'Number', 'Comma', 'String', 'Colon',
+           'Number', 'MapCloseBracket', 'Newline',
+           'EOF']
+    assert [t.name for t in tokens] == res
 
     s = "{4:'a'}"
     tokens = lex(s)
-    assert [t.name for t in tokens] == ['MapOpenBracket', 'Number', 'Colon', 'String', 'MapCloseBracket', 'Newline', 'EOF']
+    res = ['MapOpenBracket', 'Number', 'Colon',
+           'String', 'MapCloseBracket', 'Newline',
+           'EOF']
+    assert [t.name for t in tokens] == res
 
     s = "{1:4.3}"
     tokens = lex(s)
-    assert [t.name for t in tokens] == ['MapOpenBracket', 'Number', 'Colon', 'Float', 'MapCloseBracket', 'Newline', 'EOF']
+    res = ['MapOpenBracket', 'Number', 'Colon',
+           'Float', 'MapCloseBracket', 'Newline', 'EOF']
+    assert [t.name for t in tokens] == res
 
 # Parser Tests
 
 
 def test_parser_simple_dict():
+
     ast = parse("{1:1,1:2}")
-    assert ast == Program([ExprStatement(DictLiteral([KeyValueLiteral(IntLiteral(1), IntLiteral(1)), KeyValueLiteral(IntLiteral(1), IntLiteral(2))]))])
+    p = Program([ExprStatement(
+        DictLiteral(
+            [KeyValueLiteral(IntLiteral(1), IntLiteral(1)),
+             KeyValueLiteral(IntLiteral(1), IntLiteral(2))]
+        ))])
+    assert ast == p
 
     ast = parse("a = {1:'a',2:'b'}")
-    assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(1), StringLiteral('"a"')), KeyValueLiteral(IntLiteral(2), StringLiteral('"b"'))]))])
+    p = Program([Assignment(
+        ImplicitSelf(),
+        'a',
+        DictLiteral(
+            [KeyValueLiteral(IntLiteral(1), StringLiteral('"a"')),
+             KeyValueLiteral(IntLiteral(2), StringLiteral('"b"'))]
+        ))])
+    assert ast == p
 
     ast = parse("""
 a = {12:'a',27:'b'}
 b = {'a':2,'b':4}
 """)
-    assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(12), StringLiteral('"a"')), KeyValueLiteral(IntLiteral(27), StringLiteral('"b"'))])), Assignment(ImplicitSelf(), 'b', DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(2)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(4))]))])
+    p = Program([
+                Assignment(
+                    ImplicitSelf(),
+                    'a',
+                    DictLiteral(
+                        [KeyValueLiteral(IntLiteral(12), StringLiteral('"a"')),
+                         KeyValueLiteral(IntLiteral(27), StringLiteral('"b"'))]
+                    )),
+                Assignment(
+                    ImplicitSelf(),
+                    'b',
+                    DictLiteral(
+                        [KeyValueLiteral(StringLiteral('"a"'), IntLiteral(2)),
+                         KeyValueLiteral(StringLiteral('"b"'), IntLiteral(4))]
+                    ))])
+    assert ast == p
 
 
 def test_parser_builtin_dict():
     ast = parse("{'a':1,'b':2} add('c',4)")
-    assert ast == Program([ExprStatement(MethodCall(DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2))]), 'add', [StringLiteral('"c"'), IntLiteral(4)]))])
+    p = Program([ExprStatement(
+        MethodCall(
+            DictLiteral(
+                [KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)),
+                 KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2))]
+            ),
+            'add',
+            [StringLiteral('"c"'), IntLiteral(4)]))])
+    assert ast == p
 
     ast = parse("{'a':1,'b':2,'c':4} del('b')")
-    assert ast == Program([ExprStatement(MethodCall(DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2)), KeyValueLiteral(StringLiteral('"c"'), IntLiteral(4))]), 'del', [StringLiteral('"b"')]))])
-    
+    p = Program([ExprStatement(
+        MethodCall(
+            DictLiteral(
+                [KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)),
+                 KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2)),
+                 KeyValueLiteral(StringLiteral('"c"'), IntLiteral(4))]),
+            'del',
+            [StringLiteral('"b"')]))])
+    assert ast == p
+
     ast = parse("{'a':1,'b':2,'c':4} get('a')")
-    assert ast == Program([ExprStatement(MethodCall(DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2)), KeyValueLiteral(StringLiteral('"c"'), IntLiteral(4))]), 'get', [StringLiteral('"a"')]))])
+    p = Program([ExprStatement(
+        MethodCall(
+            DictLiteral(
+                [KeyValueLiteral(StringLiteral('"a"'), IntLiteral(1)),
+                 KeyValueLiteral(StringLiteral('"b"'), IntLiteral(2)),
+                 KeyValueLiteral(StringLiteral('"c"'), IntLiteral(4))]),
+            'get',
+            [StringLiteral('"a"')]))])
+    assert ast == p
 
     ast = parse("""
 a = {1:2,2:3}
@@ -54,8 +113,38 @@ b = {'a':13,'b':14}
 e = b get('b')
 a del(1)
 """)
-    assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(1), IntLiteral(2)), KeyValueLiteral(IntLiteral(2), IntLiteral(3))])), Assignment(ImplicitSelf(), 'b', DictLiteral([KeyValueLiteral(StringLiteral('"a"'), IntLiteral(13)), KeyValueLiteral(StringLiteral('"b"'), IntLiteral(14))])), Assignment(ImplicitSelf(), 'e', MethodCall(MethodCall(ImplicitSelf(), 'b', []), 'get', [StringLiteral('"b"')])), ExprStatement(MethodCall(MethodCall(ImplicitSelf(), 'a', []), 'del', [IntLiteral(1)]))])
-
+    p = Program([
+        Assignment(
+            ImplicitSelf(),
+            'a',
+            DictLiteral([
+                KeyValueLiteral(IntLiteral(1), IntLiteral(2)),
+                KeyValueLiteral(IntLiteral(2), IntLiteral(3))])),
+        Assignment(
+            ImplicitSelf(),
+            'b',
+            DictLiteral([
+                KeyValueLiteral(StringLiteral('"a"'), IntLiteral(13)),
+                KeyValueLiteral(StringLiteral('"b"'), IntLiteral(14))])),
+        Assignment(
+            ImplicitSelf(),
+            'e',
+            MethodCall(
+                MethodCall(
+                    ImplicitSelf(),
+                    'b',
+                    []),
+                'get',
+                [StringLiteral('"b"')])),
+        ExprStatement(
+            MethodCall(
+                MethodCall(
+                    ImplicitSelf(),
+                    'a',
+                    []),
+                'del',
+                [IntLiteral(1)]))])
+    assert ast == p
 
 # Interpreter Tests
 
@@ -65,10 +154,11 @@ def test_interpreter_dict():
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    dict = w_module.getvalue("a")
-    assert dict.getelement("a").value == 1
-    assert dict.getelement("b").value == 2
-    assert dict.getelement("c").value == 4
+    d = w_module.getvalue("a")
+    assert d.getelement("a").value == 1
+    assert d.getelement("b").value == 2
+    assert d.getelement("c").value == 4
+
 
 def test_interpreter_add_del_dict():
     ast = parse("""
@@ -83,12 +173,13 @@ c del(1.2)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    dict = w_module.getvalue("a")
-    assert dict.getelement(2).value == 1
-    assert dict.getelement(3).value == 4
-    assert dict.getelement(1) == None
+    d = w_module.getvalue("a")
+    assert d.getelement(2).value == 1
+    assert d.getelement(3).value == 4
+    assert d.getelement(1) is None
     assert w_module.getvalue("b").value == 2
     assert w_module.getvalue("c").elements == {}
+
 
 def test_interpreter_builtin_dict():
     ast = parse("""
@@ -108,9 +199,10 @@ value = a get('d')
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    assert w_module.getvalue("condition").value == True
+    assert w_module.getvalue("condition").value is True
     assert w_module.getvalue("length").value == 5
     assert w_module.getvalue("value").value == 9
+
 
 def test_interpreter_mixed_builtin_dict():
     ast = parse("""
@@ -128,15 +220,16 @@ dlen = d len
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    dict = w_module.getvalue("a")
-    assert dict.getelement("b").value == 2.3
-    assert dict.getelement("c").value == 3.5
-    assert dict.getelement("d").value == 4.7
-    assert dict.getelement("a") == None
+    d = w_module.getvalue("a")
+    assert d.getelement("b").value == 2.3
+    assert d.getelement("c").value == 3.5
+    assert d.getelement("d").value == 4.7
+    assert d.getelement("a") is None
     assert w_module.getvalue("c").value == 4.7
     assert w_module.getvalue("b").value == 3
     assert w_module.getvalue("d").getelement('a').value == 1.2
     assert w_module.getvalue("dlen").value == 1
+
 
 def test_interpreter_mixed_keys_dict():
     ast = parse("""
@@ -150,18 +243,19 @@ notcontains = a contains(27)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    dict = w_module.getvalue("a")
-    assert dict.getelement("a").value == 1.1
-    assert dict.getelement("b").value == 2.3
-    assert dict.getelement("c").value == 3.5
-    assert dict.getelement(1).value == "som"
-    assert dict.getelement(2).value == "eth"
-    assert dict.getelement(3).value == "ing"
-    assert dict.getelement(4.2).value == "wsws"
-    assert dict.getelement(2.7).value == 3.4
-    assert w_module.getvalue("contains").value == True
-    assert w_module.getvalue("notcontains").value == False
+    d = w_module.getvalue("a")
+    assert d.getelement("a").value == 1.1
+    assert d.getelement("b").value == 2.3
+    assert d.getelement("c").value == 3.5
+    assert d.getelement(1).value == "som"
+    assert d.getelement(2).value == "eth"
+    assert d.getelement(3).value == "ing"
+    assert d.getelement(4.2).value == "wsws"
+    assert d.getelement(2.7).value == 3.4
+    assert w_module.getvalue("contains").value is True
+    assert w_module.getvalue("notcontains").value is False
     assert w_module.getvalue("b").value == 8
+
 
 def test_interpreter_boolean_dict():
     ast = parse("""
@@ -179,11 +273,12 @@ result = temp not
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    dict = w_module.getvalue("dict")
-    assert dict.getelement(12).value == True
-    assert w_module.getvalue("temp").value == True
-    assert w_module.getvalue("result").value == False
+    dict_el = w_module.getvalue("dict")
+    assert dict_el.getelement(12).value is True
+    assert w_module.getvalue("temp").value is True
+    assert w_module.getvalue("result").value is False
     assert w_module.getvalue("length").value == 3
+
 
 def test_interpreter_iterate_dict():
     # dict to list
@@ -201,5 +296,7 @@ while i:
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    list = [e.value for e in w_module.getvalue("list").elements]
-    assert all(e in list for e in [0,1,2,3,4,5])
+    list_el = [e.value for e in w_module.getvalue("list").elements]
+    # all (logical 'and' between list elements)
+    # any (logical 'or' between list elements)
+    assert all(e in list_el for e in range(5))

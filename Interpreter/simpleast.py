@@ -82,65 +82,78 @@ class AstNode(object):
         p.write("\n".join(content))
         graphclient.display_dot_file(str(p))
 
+
 class Expression(AstNode):
     """ Abstract Base class for all expression AST nodes"""
+
 
 class IntLiteral(Expression):
     """ An integer literal (like "1") """
 
     attrs = ["value"]
+
     def __init__(self, value):
         self.value = int(value)
+
 
 class FloatLiteral(Expression):
     """ A float literal (like "0.1337") """
     attrs = ["value"]
+
     def __init__(self, value):
         # some initial cleaning needed
         # normalize cases of -0.0* and +0.0* to 0.0*
-        if re.match(r'[-+](0[.][0]+)',value):
+        if re.match(r'[-+](0[.][0]+)', value):
             value = value[1:]
 
         self.value = float(value)
 
+
 class StringLiteral(Expression):
     """ A string literal like "abc" """
     attrs = ["value"]
+
     def __init__(self, value):
-        self.value = value[1:-1]    # cut off quotes, otherwise we'd have double quoted strings
+        # cut off quotes, otherwise we'd have double quoted strings
+        self.value = value[1:-1]
+
 
 class BoolLiteral(Expression):
     """ A bool literal True/False"""
     attrs = ["value"]
+
     def __init__(self, value):
         self.value = (value == 'True')      # parser obtains 'True'/'False'
+
 
 class KeyValueLiteral(Expression):
     """ A tuple of key and value used in dictionarys like "a":1
     """
-    
-    attrs = ["key","value"]
+    attrs = ["key", "value"]
+
     def __init__(self, key, value):
         self.key = key
         self.value = value
+
 
 class ListLiteral(Expression):
     """ A list like [1,2,3,4]
     Elements are IntLiteral(1), IntLiteral(2) etc...
     """
-
     attrs = ["elements"]
+
     def __init__(self, elements=None):
         if elements is None:
             elements = []
         self.elements = elements
 
+
 class DictLiteral(Expression):
     """ A dictionary like {key1:value1,key2:value2} where
         valid keys are of type string, integer or float
     """
-    
     attrs = ["elements"]
+
     def __init__(self, elements=None):
         if elements is None:
             elements = []
@@ -159,14 +172,15 @@ class MethodCall(Expression):
         5 f
         (receiver is IntLiteral(5), methodname is 'f' and args is [])
     """
-
     attrs = ["receiver", "methodname", "arguments"]
+
     def __init__(self, receiver, methodname, arguments=None):
         self.receiver = receiver
         self.methodname = methodname
         if arguments is None:
             arguments = []
         self.arguments = arguments
+
 
 class PrimitiveMethodCall(MethodCall):
     """ A method call to a primitive method. Primitive method names start with
@@ -179,6 +193,7 @@ class PrimitiveMethodCall(MethodCall):
         is [IntLiteral(6)])
     """
 
+
 class ImplicitSelf(Expression):
     """ The receiver that is used when none is specified.
 
@@ -188,8 +203,10 @@ class ImplicitSelf(Expression):
 
     attrs = []
 
+
 class Statement(AstNode):
     """ Base class of all statement nodes. """
+
 
 class Assignment(Statement):
     """ An assignement: lvalue attrname = expression.
@@ -197,20 +214,22 @@ class Assignment(Statement):
     Example:
     x = 7
     this is an assignement on the implicit self."""
-
     attrs = ["lvalue", "attrname", "expression"]
+
     def __init__(self, lvalue, attrname, expression):
         self.lvalue = lvalue
         self.attrname = attrname
         self.expression = expression
 
+
 class ExprStatement(Statement):
     """ A statement that is just an expression evaluation (and the result is
     ignored)."""
-
     attrs = ["expression"]
+
     def __init__(self, expr):
         self.expression = expr
+
 
 class IfStatement(Statement):
     """ An if statement. The syntax looks like this:
@@ -223,10 +242,12 @@ class IfStatement(Statement):
     The elseblock is optional."""
 
     attrs = ["condition", "ifblock", "elseblock"]
+
     def __init__(self, condition, ifblock, elseblock=None):
         self.condition = condition
         self.ifblock = ifblock
         self.elseblock = elseblock
+
 
 class WhileStatement(Statement):
     """ A while loop. The syntax looks like this:
@@ -239,10 +260,12 @@ class WhileStatement(Statement):
     The elseblock is optional."""
 
     attrs = ["condition", "whileblock", "elseblock"]
+
     def __init__(self, condition, whileblock, elseblock=None):
         self.condition = condition
         self.whileblock = whileblock
         self.elseblock = elseblock
+
 
 class FunctionDefinition(Statement):
     """ A function definition.  Corresponds to def name(arguments): block.
@@ -259,10 +282,12 @@ class FunctionDefinition(Statement):
             43
     """
     attrs = ["name", "arguments", "block"]
+
     def __init__(self, name, arguments, block):
         self.name = name
         self.arguments = arguments
         self.block = block
+
 
 class ObjectDefinition(Statement):
     """ Makes a new normal object.
@@ -279,7 +304,7 @@ class ObjectDefinition(Statement):
     The 'parentnames' attribute is a list of strings giving the parent
     attributes of the new object. The 'parentdefinitions' attribute is a list
     of expression-asts giving the initial value of those parent attributes.
-    
+
     Example:
         object x(p1=a, p2=b):
             ...
@@ -290,6 +315,7 @@ class ObjectDefinition(Statement):
 
     """
     attrs = ["name", "block", "parentnames", "parentdefinitions"]
+
     def __init__(self, name, block, parentnames=None, parentdefinitions=None):
         self.name = name
         self.block = block
@@ -299,8 +325,10 @@ class ObjectDefinition(Statement):
         self.parentnames = parentnames
         self.parentdefinitions = parentdefinitions
 
+
 class Program(AstNode):
     """ A list of statements. """
     attrs = ["statements"]
+
     def __init__(self, statements):
         self.statements = statements
