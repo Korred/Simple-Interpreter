@@ -281,7 +281,17 @@ class W_Dict(W_NormalObject):
             pass
 
     def clone(self):
-        return W_Dict(self.elements)
+        el = []
+        # W_Dict elements must be W_KeyValue elements for proper W_Dict init
+        for k in list(self.elements.keys()):
+            if (isinstance(k, str)):
+                el.append(W_KeyValue(W_String(k), self.elements[k]))
+            elif (isinstance(k, float)):
+                el.append(W_KeyValue(W_Float(k), self.elements[k]))
+            else:
+                el.append(W_KeyValue(W_Integer(k), self.elements[k]))
+
+        return W_Dict(el)
 
     def getparents(self):
         return [self.parent]

@@ -2,7 +2,7 @@ from simpleparser import parse
 from interpreter import Interpreter
 
 
-def test_method_simple():
+def test_method_simple_int():
     ast = parse("""
 object a:
     x = 11
@@ -22,7 +22,109 @@ bf = b f # b is the receiver, therefore self is b in the method
     assert w_module.getvalue("bf").value == 22
 
 
-def test_method_complex():
+def test_method_simple_float():
+    ast = parse("""
+object a:
+    x = 13.37
+    def f:
+        self x
+object b:
+    __parent__ = a
+    x = 4.04
+af = a f # a is the receiver, therefore self is a in the method
+bf = b f # b is the receiver, therefore self is b in the method
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("af").value == 13.37
+    assert w_module.getvalue("bf").value == 4.04
+
+
+def test_method_simple_string():
+    ast = parse("""
+object a:
+    x = "string"
+    def f:
+        self x
+object b:
+    __parent__ = a
+    x = "string"
+af = a f # a is the receiver, therefore self is a in the method
+bf = b f # b is the receiver, therefore self is b in the method
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("af").value == "string"
+    assert w_module.getvalue("bf").value == "string"
+
+
+def test_method_simple_bool():
+    ast = parse("""
+object a:
+    x = True
+    def f:
+        self x
+object b:
+    __parent__ = a
+    x = False
+af = a f # a is the receiver, therefore self is a in the method
+bf = b f # b is the receiver, therefore self is b in the method
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("af").value is True
+    assert w_module.getvalue("bf").value is False
+
+
+def test_method_simple_list():
+    ast = parse("""
+object a:
+    x = [1,2]
+    def f:
+        self x
+object b:
+    __parent__ = a
+    x = [3,4]
+af = a f # a is the receiver, therefore self is a in the method
+bf = b f # b is the receiver, therefore self is b in the method
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert [i.value for i in w_module.getvalue("af").elements] == [1, 2]
+    assert [i.value for i in w_module.getvalue("bf").elements] == [3, 4]
+
+
+def test_method_simple_dict():
+    ast = parse("""
+object a:
+    x = {1:2}
+    def f:
+        self x
+object b:
+    __parent__ = a
+    x = {3:4}
+af = a f # a is the receiver, therefore self is a in the method
+bf = b f # b is the receiver, therefore self is b in the method
+
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    d1 = w_module.getvalue("af")
+    d2 = w_module.getvalue("bf")
+    assert d1.getelement(1).value == 2
+    assert d2.getelement(3).value == 4
+
+
+def test_method_complex_int():
     ast = parse("""
 k = 10
 object a:

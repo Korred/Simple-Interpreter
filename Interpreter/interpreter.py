@@ -172,13 +172,13 @@ class Interpreter(object):
                 params = []
                 for p in ast.arguments:
                     # eval arguments as receiver later is different
-                    if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Method"]:
+                    if p.__class__.__name__ in ["W_NormalObject", "W_Integer", "W_Method", "W_List", "W_Dict" "W_Float", "W_String", "W_Boolean"]:
                         params.append(p)
                     else:
                         res = self.eval(p, w_context)
                         params.append(res)
 
-            # case where is a W_Method object
+            # case where m is a W_Method object
             if m.__class__.__name__ == "W_Method":
                 m.setvalue("self", rec)
                 if ast.arguments:
@@ -187,7 +187,7 @@ class Interpreter(object):
                 res = self.eval(m.method, m)
                 return res
 
-            elif m.__class__.__name__ == "W_Integer":
+            elif m.__class__.__name__ in ["W_Integer", "W_Float", "W_String", "W_Boolean", "W_List", "W_Dict"]:
                 return m
 
             else:
@@ -457,7 +457,6 @@ class Interpreter(object):
             else:
                 raise TypeError("Cannot compare {} and {}".format(
                     l_class, r_class))
-
 
     def eval_WhileStatement(self, ast, w_context):
         res = None
