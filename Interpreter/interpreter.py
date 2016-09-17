@@ -255,6 +255,19 @@ class Interpreter(object):
             value = self.eval(ast.arguments[1], w_context)
             l.addelement(key, value)
 
+        if ast.methodname == "$list_insert":
+            l = self.eval(ast.receiver, w_context)
+            pos = self.eval(ast.arguments[0], w_context).value
+            element = self.eval(ast.arguments[1], w_context)
+            l.insert(pos, element)
+
+        if ast.methodname == "$list_replace":
+            l = self.eval(ast.receiver, w_context)
+            pos = self.eval(ast.arguments[0], w_context).value
+            element = self.eval(ast.arguments[1], w_context)
+            l.replace(pos, element)
+
+
         if ast.methodname == "$dict_get_keys":
             l = self.eval(ast.receiver, w_context)
             return l.getkeys()
@@ -365,7 +378,29 @@ class Interpreter(object):
                     except ValueError:
                         raise ValueError('Provided Type cannot be parsed to String')
 
-        if "int_" in ast.methodname or "float_" in ast.methodname:
+        # numeric operations
+        num_op = ['$int_add',
+                  '$int_sub',
+                  '$int_mul',
+                  '$int_div',
+                  '$float_add',
+                  '$float_sub',
+                  '$float_mul',
+                  '$float_div']
+
+        # comparision 
+        comp_op = ['$int_eq',
+                   '$int_less',
+                   '$int_lesseq',
+                   '$int_greater',
+                   '$int_greatereq',
+                   '$float_eq',
+                   '$float_less',
+                   '$float_lesseq',
+                   '$float_greater',
+                   '$float_greatereq']
+
+        if ast.methodname in num_op:
             # Flags necessary to decide whether to return a float or an int
             l = self.eval(ast.receiver, w_context)
             l_flag = False
@@ -396,6 +431,33 @@ class Interpreter(object):
                 return W_Float(l)
             else:
                 return W_Integer(int(l))
+
+        if ast.methodname in comp_op:
+            l = self.eval(ast.receiver, w_context)
+            r = self.eval(ast.arguments[0], w_context)
+
+            l_class = l.__class__.__name__
+            r_class = r.__class__.__name__
+            valid = ["W_Float", "W_Integer"]
+
+            if l_class in valid and r_class in valid:
+                if "_eq" in ast.methodname:
+                    op = operator.eq
+                elif "_lesseq" in ast.methodname:
+                    op = operator.le
+                elif "_less" in ast.methodname:
+                    op = operator.lt
+                elif "_greatereq" in ast.methodname:
+                    op = operator.ge
+                elif "_greater" in ast.methodname:
+                    op = operator.gt
+
+                comp = op(l.value, r.value)
+                return W_Boolean(comp)
+            else:
+                raise TypeError("Cannot compare {} and {}".format(
+                    l_class, r_class))
+
 
     def eval_WhileStatement(self, ast, w_context):
         res = None

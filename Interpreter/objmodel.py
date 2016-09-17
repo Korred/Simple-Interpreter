@@ -191,11 +191,24 @@ class W_List(W_NormalObject):
         self.length = len(elements)
 
     def getelement(self, index):
-        return self.elements[index]
+        try:
+            element = self.elements[index]
+            return element
+        except IndexError:
+            raise IndexError("Provided Index does not exist!")
 
     def addelement(self, element):
         self.elements.append(element)
         self.length += 1
+
+    def insert(self, pos, element):
+        self.elements.insert(pos, element)
+
+    def replace(self, pos, element):
+        try:
+            self.elements[pos] = element
+        except IndexError:
+            self.addelement(element)
 
     def istrue(self):
         return self.length != 0
@@ -229,7 +242,11 @@ class W_Dict(W_NormalObject):
         self.length = len(elements)
 
     def getelement(self, key):
-        return self.elements.get(key)
+        try:
+            element = self.elements.get(key)
+            return element
+        except IndexError:
+            raise IndexError("Provided Index does not exist!")
 
     def addelement(self, key, value):
         self.elements[key.value] = value

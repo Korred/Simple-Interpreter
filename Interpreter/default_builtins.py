@@ -12,6 +12,21 @@ object inttrait:
     def div(x):
         self $int_div(x)
 
+    def equals(x): # ==
+        self $int_eq(x)
+
+    def less_than(x): # <
+        self $int_less(x)
+
+    def less_equal(x): # <=
+        self $int_lesseq(x)
+
+    def greater_than(x): # >
+        self $int_greater(x)
+
+    def greater_equal(x): # >=
+        self $int_greatereq(x)
+
 object floattrait:
     def add(x):
         self $float_add(x)
@@ -24,6 +39,21 @@ object floattrait:
 
     def div(x):
         self $float_div(x)
+
+    def equals(x): # ==
+        self $float_eq(x)
+
+    def less_than(x): # <
+        self $float_less(x)
+
+    def less_equal(x): # <=
+        self $float_lesseq(x)
+
+    def greater_than(x): # >
+        self $float_greater(x)
+
+    def greater_equal(x): # >=
+        self $float_greatereq(x)
 
 object stringtrait:
     def len:
@@ -41,6 +71,12 @@ object stringtrait:
 object listtrait:
     def add(x):
         self $list_add(x)
+
+    def insert(x,y):
+        self $list_insert(x,y)
+
+    def replace(x,y):
+        self $list_replace(x,y)
 
     def del(x):
         self $list_del(x)
@@ -65,10 +101,10 @@ object listtrait:
         # modifies original list
         x = self reverse
         self clear
-        self append(x)
+        self extend(x)
         self
 
-    def append(x):
+    def extend(x):
         l = x len
         i = 0
         while l:
@@ -161,7 +197,7 @@ def e_range(x,y):
         k = k sub(1)
     r
 
-def fibonacci_iter(x):
+def fibonacci(x):
     a = 0
     b = 1
     k = x

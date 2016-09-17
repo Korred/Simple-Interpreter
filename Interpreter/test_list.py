@@ -202,6 +202,16 @@ c del(2) #last
     assert [e.value for e in w_module.getvalue("c").elements] == [1, 2]
 
 
+def test_list_i_del_error():
+    ast = parse("""
+a = [1,2,3]
+a del(6)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    py.test.raises(IndexError, interpreter.eval, ast, w_module)
+
+
 def test_clear_list():
     ast = parse("""
 a = [1,2,3,4,5]
@@ -213,11 +223,11 @@ a clear
     assert w_module.getvalue("a").elements == []
 
 
-def test_list_i_append():
+def test_list_i_extend():
     ast = parse("""
 a = [1,2]
 b = [3,4]
-c = a append(b)
+c = a extend(b)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -242,7 +252,7 @@ e = e_range(5,10)
 
 def test_list_i_fibonacci():
     ast = parse("""
-f = fibonacci_iter(6)
+f = fibonacci(6)
 
 def fib_list(x):
     r = []
@@ -250,7 +260,7 @@ def fib_list(x):
     k = x add(1)
 
     while k:
-        f = fibonacci_iter(i)
+        f = fibonacci(i)
         r add(f)
         i = i add(1)
         k = k sub(1)
@@ -313,3 +323,47 @@ d = [a,b,c]
     assert x[0].value == 1
     assert x[1].value == 2
     assert [a.value for a in x[2].elements] == [3, 4, 5]
+
+
+def test_list_insert():
+    ast = parse("""
+a = [1,2,3]
+a insert(0,0)
+a insert(4,4)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    x = w_module.getvalue("a").elements
+    assert [a.value for a in x] == [0, 1, 2, 3, 4]
+
+
+def test_list_get():
+    ast = parse("""
+a = [1,2,3]
+b = a get(0)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("b").value == 1
+
+
+def test_list_replace():
+    ast = parse("""
+a = [1,2,3]
+a replace(0,0)
+a replace(6,"test")
+
+b = [[1,2,3]]
+rep1 = b get(0)
+rep1 replace(2,1337)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    x1 = w_module.getvalue("a").elements
+    assert [a.value for a in x1] == [0, 2, 3, "test"]
+
+    x2 = w_module.getvalue("rep1").elements
+    assert [a.value for a in x2] == [1, 2, 1337]
