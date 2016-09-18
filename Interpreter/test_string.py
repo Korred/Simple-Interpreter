@@ -3,6 +3,44 @@ from interpreter import Interpreter
 from simpleast import *
 from objmodel import W_String
 
+def test_parser_string():
+    ast = parse("""
+s = "text"
+if s equals("text"):
+    s2 = "profit"
+else:
+    s2 = "aaaah"
+""")
+    assert ast == Program([
+        Assignment(ImplicitSelf(), 's', StringLiteral('text')), 
+        IfStatement(MethodCall(
+            MethodCall(ImplicitSelf(), 's', []), 'equals', [StringLiteral('text')]), 
+        Program([Assignment(ImplicitSelf(), 's2', StringLiteral('profit'))]), 
+        Program([Assignment(ImplicitSelf(), 's2', StringLiteral('aaaah'))]))])
+
+    ast = parse("""
+a = "text"
+s = a reverse
+sub = s substring(0,2)
+""")
+    assert ast == Program([
+        Assignment(ImplicitSelf(), 'a', StringLiteral('text')), 
+        Assignment(ImplicitSelf(), 's', MethodCall(
+            MethodCall(ImplicitSelf(), 'a', []), 'reverse', [])), 
+        Assignment(ImplicitSelf(), 'sub', MethodCall(
+            MethodCall(ImplicitSelf(), 's', []), 'substring', [IntLiteral(0), IntLiteral(2)]))])
+
+    ast = parse("""
+s1 = "text"
+s2 = "wup"
+concat = s1 append(s2)
+""")
+    assert ast == Program([
+        Assignment(ImplicitSelf(), 's1', StringLiteral('text')),
+        Assignment(ImplicitSelf(), 's2', StringLiteral('wup')),
+        Assignment(ImplicitSelf(), 'concat', MethodCall(
+            MethodCall(ImplicitSelf(), 's1', []), 'append', [MethodCall(ImplicitSelf(), 's2', [])]))])
+
 def test_string_object():
     w1 = W_String("string")
     w2 = W_String("gnirts")
@@ -165,3 +203,14 @@ sub6 = "" substring(0,5)
     assert w_module.getvalue("sub4").value == "ist ein"
     assert w_module.getvalue("sub5").value == "test"
     assert w_module.getvalue("sub6").value == ""
+
+def test_interpreter_string_in_string():
+    ast = parse("""
+quote1 = "'as'"
+quote2 = '"as"'
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("quote1").value == "'as'"
+    assert w_module.getvalue("quote2").value == '"as"'
