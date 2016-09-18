@@ -12,11 +12,11 @@ else:
     s2 = "aaaah"
 """)
     assert ast == Program([
-        Assignment(ImplicitSelf(), 's', StringLiteral('text')), 
+        Assignment(ImplicitSelf(), 's', StringLiteral('"text"')), 
         IfStatement(MethodCall(
-            MethodCall(ImplicitSelf(), 's', []), 'equals', [StringLiteral('text')]), 
-        Program([Assignment(ImplicitSelf(), 's2', StringLiteral('profit'))]), 
-        Program([Assignment(ImplicitSelf(), 's2', StringLiteral('aaaah'))]))])
+            MethodCall(ImplicitSelf(), 's', []), 'equals', [StringLiteral('"text"')]), 
+        Program([Assignment(ImplicitSelf(), 's2', StringLiteral('"profit"'))]), 
+        Program([Assignment(ImplicitSelf(), 's2', StringLiteral('"aaaah"'))]))])
 
     ast = parse("""
 a = "text"
@@ -24,7 +24,7 @@ s = a reverse
 sub = s substring(0,2)
 """)
     assert ast == Program([
-        Assignment(ImplicitSelf(), 'a', StringLiteral('text')), 
+        Assignment(ImplicitSelf(), 'a', StringLiteral('"text"')), 
         Assignment(ImplicitSelf(), 's', MethodCall(
             MethodCall(ImplicitSelf(), 'a', []), 'reverse', [])), 
         Assignment(ImplicitSelf(), 'sub', MethodCall(
@@ -36,8 +36,8 @@ s2 = "wup"
 concat = s1 append(s2)
 """)
     assert ast == Program([
-        Assignment(ImplicitSelf(), 's1', StringLiteral('text')),
-        Assignment(ImplicitSelf(), 's2', StringLiteral('wup')),
+        Assignment(ImplicitSelf(), 's1', StringLiteral('"text"')),
+        Assignment(ImplicitSelf(), 's2', StringLiteral('"wup"')),
         Assignment(ImplicitSelf(), 'concat', MethodCall(
             MethodCall(ImplicitSelf(), 's1', []), 'append', [MethodCall(ImplicitSelf(), 's2', [])]))])
 
