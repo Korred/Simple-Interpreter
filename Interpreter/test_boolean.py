@@ -12,13 +12,28 @@ b = False
 if a:
     c = True
 """)
-    assert ast == Program([Assignment(ImplicitSelf(), 'a', BoolLiteral('True')), Assignment(ImplicitSelf(), 'b', BoolLiteral('False')), IfStatement(MethodCall(ImplicitSelf(), 'a', []), Program([Assignment(ImplicitSelf(), 'c', BoolLiteral('True'))]), None)])
+    assert ast == Program([
+        Assignment(ImplicitSelf(), 'a', BoolLiteral('True')), 
+        Assignment(ImplicitSelf(), 'b', BoolLiteral('False')), 
+        IfStatement(MethodCall(ImplicitSelf(), 'a', []), 
+            Program([Assignment(ImplicitSelf(), 'c', BoolLiteral('True'))]), None)])
 
     ast = parse("""
 a = {1:True,2:False,3:True}
 b = [True,False,False,True]
 """)
-    assert ast == Program([Assignment(ImplicitSelf(), 'a', DictLiteral([KeyValueLiteral(IntLiteral(1), BoolLiteral('True')), KeyValueLiteral(IntLiteral(2), BoolLiteral('False')), KeyValueLiteral(IntLiteral(3), BoolLiteral('True'))])), Assignment(ImplicitSelf(), 'b', ListLiteral([BoolLiteral('True'), BoolLiteral('False'), BoolLiteral('False'), BoolLiteral('True')]))])
+    assert ast == Program([
+        Assignment(ImplicitSelf(), 'a', 
+            DictLiteral([
+                KeyValueLiteral(IntLiteral(1), BoolLiteral('True')), 
+                KeyValueLiteral(IntLiteral(2), BoolLiteral('False')), 
+                KeyValueLiteral(IntLiteral(3), BoolLiteral('True'))])), 
+        Assignment(ImplicitSelf(), 'b', 
+            ListLiteral([
+                BoolLiteral('True'), 
+                BoolLiteral('False'), 
+                BoolLiteral('False'), 
+                BoolLiteral('True')]))])
 
     ast = parse("""
 a = True
@@ -26,45 +41,106 @@ b = a not
 c = a or(b)
 d = b and(b)
 """)
-    assert ast == Program([Assignment(ImplicitSelf(), 'a', BoolLiteral('True')), Assignment(ImplicitSelf(), 'b', MethodCall(MethodCall(ImplicitSelf(), 'a', []), 'not', [])), Assignment(ImplicitSelf(), 'c', MethodCall(MethodCall(ImplicitSelf(), 'a', []), 'or', [MethodCall(ImplicitSelf(), 'b', [])])), Assignment(ImplicitSelf(), 'd', MethodCall(MethodCall(ImplicitSelf(), 'b', []), 'and', [MethodCall(ImplicitSelf(), 'b', [])]))])
+    assert ast == Program([
+        Assignment(ImplicitSelf(), 'a', BoolLiteral('True')), 
+        Assignment(ImplicitSelf(), 'b', 
+            MethodCall(MethodCall(ImplicitSelf(), 'a', []), 'not', [])), 
+        Assignment(ImplicitSelf(), 'c', 
+            MethodCall(MethodCall(ImplicitSelf(), 'a', []), 'or', 
+                [MethodCall(ImplicitSelf(), 'b', [])])), 
+        Assignment(ImplicitSelf(), 'd', 
+            MethodCall(MethodCall(ImplicitSelf(), 'b', []), 'and', 
+                [MethodCall(ImplicitSelf(), 'b', [])]))])
 
-def test_interpreter_boolean():
+def test_interpreter_boolean_if():
     ast = parse("""
-a = True
-if a:
+if True and(True or(True not)):
     b = {'a':1,'b':2,'c':3}
 else:
     b = {'a':10,'b':11,'c':12}
 c = b get('a')
-neg = False
-bool1 = neg not
-bool2 = a and(bool1)
-bool3 = neg and(neg)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("a").value == True
-    assert w_module.getvalue("neg").value == False
-    assert w_module.getvalue("bool1").value == True
-    assert w_module.getvalue("bool2").value == True
-    assert w_module.getvalue("bool3").value == False
     assert w_module.getvalue("c").value == 1
 
-def test_interpreter_boolean_logic():
+def test_interpreter_boolean_and():
+    ast = parse("""
+b1 = True and(False)
+b2 = True and(True)
+b3 = True and(False and(True))
+b4 = True and(True and(True))
+b5 = b2 and(b4)
+b6 = True nand(False)
+b7 = False nand(True and(False))
+b8 = True nand(True)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("b1").value == False
+    assert w_module.getvalue("b2").value == True
+    assert w_module.getvalue("b3").value == False
+    assert w_module.getvalue("b4").value == True
+    assert w_module.getvalue("b5").value == True
+    assert w_module.getvalue("b6").value == True
+    assert w_module.getvalue("b7").value == True
+    assert w_module.getvalue("b8").value == False
+
+def test_interpreter_boolean_or():
+    ast = parse("""
+b1 = True or(False)
+b2 = True or(True)
+b3 = True or(False or(True nor(False)))
+b4 = False or(True nor(True))
+b5 = b2 or(b4)
+b6 = False nor(True)
+b7 = False nor(False)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("b1").value == True
+    assert w_module.getvalue("b2").value == True
+    assert w_module.getvalue("b3").value == True
+    assert w_module.getvalue("b4").value == False
+    assert w_module.getvalue("b5").value == True
+    assert w_module.getvalue("b6").value == False
+    assert w_module.getvalue("b7").value == True
+
+def test_interpreter_boolean_exclusive():
+    ast = parse("""
+b1 = True xor(True)
+b2 = False xor(False)
+b3 = True xor(False xnor(True or(False)))
+b4 = False or(True xnor(True))
+b5 = b2 xnor(b4)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("b1").value == False
+    assert w_module.getvalue("b2").value == True
+    assert w_module.getvalue("b3").value == True
+    assert w_module.getvalue("b4").value == True
+    assert w_module.getvalue("b5").value == True
+
+def test_interpreter_boolean_combined():
     ast = parse("""
 a = True
 b = False
 c = a and(b or(a))
 d = a and(a not)
-e = a nand(a)
-f = a nor(a)
-g = a xnor(b xor(b nand(e)))
-h = a nand(e or(g nor(a)))
-i = h and(g) not
-j = a and(b xor(b nand(a nand(e or(g nor(a or(e xor(g nor(a)))) not)))))
-k = a not not
+e = a xnor(b xor(b nand(a nand(a))))
+f = a nand(a nand(a or(e nor(a))))
+g = f and(e) not
+h = a and(b xor(b nand(a nand(a nand(a or(e nor(a or(a nand(a) xor(e nor(a)))) not))))))
+i = a not not
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -72,10 +148,8 @@ k = a not not
 
     assert w_module.getvalue("c").value == True
     assert w_module.getvalue("d").value == False
-    assert w_module.getvalue("e").value == False
-    assert w_module.getvalue("f").value == False
-    assert w_module.getvalue("g").value == True
+    assert w_module.getvalue("e").value == True
+    assert w_module.getvalue("f").value == True
+    assert w_module.getvalue("g").value == False
     assert w_module.getvalue("h").value == True
-    assert w_module.getvalue("i").value == False
-    assert w_module.getvalue("j").value == True
-    assert w_module.getvalue("k").value == True
+    assert w_module.getvalue("i").value == True
