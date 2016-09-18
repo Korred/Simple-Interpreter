@@ -11,7 +11,7 @@ def test_string_object():
     assert w2.value == "gnirts"
     assert w1.value == w2.reverse()
     assert w1.append(W_String(w2.reverse())) == "stringstring"
-
+    assert w1.equals(w1) is True
 
 def test_interpreter_string_append():
     ast = parse("""
@@ -72,8 +72,7 @@ la = a len
     assert w_module.getvalue("a").value == "{[ <'string'> ]}"
     assert w_module.getvalue("b").value == "?!§$%&&%&1234[]{]}"
 
-
-def test_interpreter_builtin_string():
+def test_interpreter_string_reverse():
     ast = parse("""
 a = "dynlang"
 b = "gnalnyd"
@@ -94,12 +93,31 @@ arevrev = a reverse reverse
     assert w_module.getvalue("equal2").value is True
     assert w_module.getvalue("arevrev").value == "dynlang"
 
+def test_interpreter_string_equals():
+    ast = parse("""
+s1 = "test"
+s2 = "test1"
+s3 = "test "
+s4 = "test"
+b1 = s1 equals(s1)
+b2 = s1 equals(s2)
+b3 = s2 equals(s3)
+b4 = s1 equals(s3)
+b5 = s1 equals(s4)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("b1").value is True
+    assert w_module.getvalue("b2").value is False
+    assert w_module.getvalue("b3").value is False
+    assert w_module.getvalue("b4").value is False
+    assert w_module.getvalue("b5").value is True
 
 def test_interpreter_string_logic():
     ast = parse("""
 s = 'test123'
-bcond = True
-if bcond and(s equals(s reverse reverse)):
+if True and(s equals(s reverse reverse)):
     dict = {'a':'test123','b':'test012'}
 bool = s equals(dict get('a'))
 srev = s reverse reverse
@@ -107,6 +125,8 @@ b1 = s equals(s reverse reverse)
 b2 = False or(s equals(s reverse reverse))
 if s equals('123'):
     b3 = True
+else:
+    b3 = False
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -116,4 +136,23 @@ if s equals('123'):
     assert w_module.getvalue("srev").value == "test123"
     assert w_module.getvalue("b1").value is True
     assert w_module.getvalue("b2").value is True
-    assert w_module.getvalue("b3") is None
+    assert w_module.getvalue("b3").value is False
+
+def test_interpreter_string_substring():
+    ast = parse("""
+s1 = "test"
+s2 = "das ist ein test"
+sub1 = s1 substring(0,1)
+sub2 = s1 substring(1,3)
+sub3 = s1 substring(2,1)
+sub4 = s2 substring(4,11)
+sub5 = s2 substring(12,20)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("sub1").value == "t"
+    assert w_module.getvalue("sub2").value == "es"
+    assert w_module.getvalue("sub3").value == ""
+    assert w_module.getvalue("sub4").value == "ist ein"
+    assert w_module.getvalue("sub5").value == "test"
