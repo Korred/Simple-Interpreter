@@ -114,8 +114,11 @@ class StringLiteral(Expression):
     attrs = ["value"]
 
     def __init__(self, value):
-        # cut off quotes, otherwise we'd have double quoted strings
-        self.value = value[1:-1]
+        if re.match(r'(["\'])(?:(?=(\\?))\2.)*?\1', value):
+            # cut off quotes, otherwise we'd have double quoted strings
+            self.value = value[1:-1]
+        else:
+            self.value = value
 
 
 class BoolLiteral(Expression):
