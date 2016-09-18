@@ -3,7 +3,6 @@ from interpreter import Interpreter
 from simpleast import *
 from objmodel import W_String
 
-
 def test_string_object():
     w1 = W_String("string")
     w2 = W_String("gnirts")
@@ -24,6 +23,8 @@ ab = a append(b)
 abc = ab append(c)
 de = d append(e)
 abcde = abc append(de)
+f = a append("")
+g = a append(" ")
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -37,6 +38,8 @@ abcde = abc append(de)
     assert w_module.getvalue("abc").value == "dynlang "
     assert w_module.getvalue("de").value == "2016"
     assert w_module.getvalue("abcde").value == "dynlang 2016"
+    assert w_module.getvalue("f").value == "dyn"
+    assert w_module.getvalue("g").value == "dyn "
 
 
 def test_interpreter_string_length():
@@ -63,6 +66,7 @@ def test_interpreter_string_special_signs():
     ast = parse("""
 a = "{[ <'string'> ]}"
 b = "?!§$%&&%&1234[]{]}"
+c = b reverse
 la = a len
 """)
     interpreter = Interpreter()
@@ -71,6 +75,7 @@ la = a len
     assert w_module.getvalue("la").value == 16
     assert w_module.getvalue("a").value == "{[ <'string'> ]}"
     assert w_module.getvalue("b").value == "?!§$%&&%&1234[]{]}"
+    assert w_module.getvalue("c").value == "}]{][4321&%&&%$§!?"
 
 def test_interpreter_string_reverse():
     ast = parse("""
@@ -104,6 +109,7 @@ b2 = s1 equals(s2)
 b3 = s2 equals(s3)
 b4 = s1 equals(s3)
 b5 = s1 equals(s4)
+b6 = "" equals(" ")
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -113,6 +119,7 @@ b5 = s1 equals(s4)
     assert w_module.getvalue("b3").value is False
     assert w_module.getvalue("b4").value is False
     assert w_module.getvalue("b5").value is True
+    assert w_module.getvalue("b6").value is False
 
 def test_interpreter_string_logic():
     ast = parse("""
@@ -147,6 +154,7 @@ sub2 = s1 substring(1,3)
 sub3 = s1 substring(2,1)
 sub4 = s2 substring(4,11)
 sub5 = s2 substring(12,20)
+sub6 = "" substring(0,5)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
@@ -156,3 +164,4 @@ sub5 = s2 substring(12,20)
     assert w_module.getvalue("sub3").value == ""
     assert w_module.getvalue("sub4").value == "ist ein"
     assert w_module.getvalue("sub5").value == "test"
+    assert w_module.getvalue("sub6").value == ""

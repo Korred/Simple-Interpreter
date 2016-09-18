@@ -81,14 +81,14 @@ b8 = True nand(True)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("b1").value == False
-    assert w_module.getvalue("b2").value == True
-    assert w_module.getvalue("b3").value == False
-    assert w_module.getvalue("b4").value == True
-    assert w_module.getvalue("b5").value == True
-    assert w_module.getvalue("b6").value == True
-    assert w_module.getvalue("b7").value == True
-    assert w_module.getvalue("b8").value == False
+    assert w_module.getvalue("b1").value is False
+    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b3").value is False
+    assert w_module.getvalue("b4").value is True
+    assert w_module.getvalue("b5").value is True
+    assert w_module.getvalue("b6").value is True
+    assert w_module.getvalue("b7").value is True
+    assert w_module.getvalue("b8").value is False
 
 def test_interpreter_boolean_or():
     ast = parse("""
@@ -104,13 +104,13 @@ b7 = False nor(False)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("b1").value == True
-    assert w_module.getvalue("b2").value == True
-    assert w_module.getvalue("b3").value == True
-    assert w_module.getvalue("b4").value == False
-    assert w_module.getvalue("b5").value == True
-    assert w_module.getvalue("b6").value == False
-    assert w_module.getvalue("b7").value == True
+    assert w_module.getvalue("b1").value is True
+    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b3").value is True
+    assert w_module.getvalue("b4").value is False
+    assert w_module.getvalue("b5").value is True
+    assert w_module.getvalue("b6").value is False
+    assert w_module.getvalue("b7").value is True
 
 def test_interpreter_boolean_exclusive():
     ast = parse("""
@@ -124,11 +124,11 @@ b5 = b2 xnor(b4)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("b1").value == False
-    assert w_module.getvalue("b2").value == True
-    assert w_module.getvalue("b3").value == True
-    assert w_module.getvalue("b4").value == True
-    assert w_module.getvalue("b5").value == True
+    assert w_module.getvalue("b1").value is False
+    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b3").value is True
+    assert w_module.getvalue("b4").value is True
+    assert w_module.getvalue("b5").value is True
 
 def test_interpreter_boolean_implication():
     ast = parse("""
@@ -141,10 +141,10 @@ b4 = False impl(False)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("b1").value == False
-    assert w_module.getvalue("b2").value == True
-    assert w_module.getvalue("b3").value == True
-    assert w_module.getvalue("b4").value == True
+    assert w_module.getvalue("b1").value is False
+    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b3").value is True
+    assert w_module.getvalue("b4").value is True
 
 def test_interpreter_boolean_equals():
     ast = parse("""
@@ -157,10 +157,10 @@ b4 = False or(True) nand(False or(True)) equals(True)
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("b1").value == False
-    assert w_module.getvalue("b2").value == True
-    assert w_module.getvalue("b3").value == True
-    assert w_module.getvalue("b4").value == False
+    assert w_module.getvalue("b1").value is False
+    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b3").value is True
+    assert w_module.getvalue("b4").value is False
 
 def test_interpreter_boolean_combined():
     ast = parse("""
@@ -178,10 +178,10 @@ i = a not not
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
 
-    assert w_module.getvalue("c").value == True
-    assert w_module.getvalue("d").value == False
-    assert w_module.getvalue("e").value == True
-    assert w_module.getvalue("f").value == True
-    assert w_module.getvalue("g").value == False
-    assert w_module.getvalue("h").value == True
-    assert w_module.getvalue("i").value == True
+    assert w_module.getvalue("c").value is True
+    assert w_module.getvalue("d").value is False
+    assert w_module.getvalue("e").value is True
+    assert w_module.getvalue("f").value is True
+    assert w_module.getvalue("g").value is False
+    assert w_module.getvalue("h").value is True
+    assert w_module.getvalue("i").value is True
