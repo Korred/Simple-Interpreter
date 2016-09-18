@@ -12,48 +12,188 @@
 \begin{abstract}
 The purpose of this project was to extend the 'Simple' Programming Language.
 During the semester we have build our own implementation of the object model and interpreter, which were both based
-on the previously provided 'Simple' parser and lexer. The below described extension provides support for additional built-in types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
+on the previously provided 'Simple' parser, lexer and AST. The below described extension provides support for additional data types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
 \end{abstract}
 
-\section{Boolean}
-In order to write more complex programs with combined logic constraints for example within if statements we implemented the Boolean object extending W\_NormalObject.
-This type has several built-in methods to combine boolean expressions like and, or, not, nor, nand, xor as well as xnor.
-The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a boolean value.
+\section{Changes}
+
+\section{New Data Types}
+\subsection{Integer/Float}
+The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type convertion of operands. Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additionals function for example comparistion operations can be found in the 'Built-ins' section [\ref{intfloat}].
+
+\subsection{Boolean}
+In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Bool' object extending 'W\_NormalObject'.
+This type has several built-in methods to combine boolean expressions like and, or, not, nor, nand, xor and xnor.
+The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a boolean value. Examples can be found in the "Built-ins" section below.
 
 
-\section{String}
-The String object extends W\_NormalObject and is true if the string's value is not empty.
-This type provides some additional built-in methods to be able to combine or compare several strings. 
-It is possible to concatenate two strings using \texttt{s1 append(s2)} or reverse a string with \texttt{s reverse}. Furthermore the length of a string is given by \texttt{s len}. 
+\subsection{String}
+The string object 'W\_String' extends 'W\_NormalObject' and is True if the string's value is not empty.
+This type provides some additional built-in methods to be able to combine or compare several strings.
 
-In order to compare two strings a call of \texttt{s1 equals(s2)} returns a W\_Boolean value, i.e. \texttt{True} if the two strings are equal or \texttt{False} otherwise.
-The latter method can be used within boolean logic, e.g. within an if statement's condition to control the syntactic behaviour of the program.
+\subsection{List}
 
-\section{Dictionary}
+\subsection{Dictionary}
 \label{dicts}
-The dictionary extends W\_NormalObject and is internally implemented using a Python dictionary.
-Relating to the semantics of a dictionary we decided to represent each element as a tuple of key and value like it is realized in Python, i.e. using the form \texttt{key:value} for its elements.
-We decided W\_String, W\_Integer as well as W\_Float to be valid keys for a dictionary.
-
-In order to work with dictionaries the object provides several built-in methods.
-We can add an element to a dictionary using \texttt{dict add(key,value)} or delete an element by its key with the use of \texttt{dict del(key)}.
-To derive the value of a stored tuple the object provides a getter that needs the key as the parameter like \texttt{dict get(key)}.
-The amount of the elements stored in the dictionary is obtained by \texttt{dict len}.
-
-To be able to iterate over a dictionary's keys or elements we provide the method \texttt{get\_keys} that returns a W\_List of all keys.
-Furthermore we decided that the types of the keys are dynamic, i.e. we accept mixed types of keys in a single dictionary.
-
-Despite that it is possible to check if a dictionary contains a key by calling \texttt{dict contains(key)} which returns a W\_Boolean.
-Hence, we are able to build more complex conditions used in if statements which leads to more flexibility in the programs that can be processed by the interpreter.
+The dictionary object 'W\_Dict' extends 'W\_NormalObject' and is internally implemented using a Python dictionary.
+Relating to the semantics of a dictionary we decided to represent each element as a key-value tuple, the same way it is done in Python, i.e. using the form \texttt{key:value} for its elements. In addition, lists and dictionaries may not be used as keys. Therefore only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python). Furthermore we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
 
 \subsection{Key-Value Tuple}
-Since we decided to implement dictionaries like it is done in Python, i.e. using the semantic \texttt{key:value} for the elements, we need to provide such an object.
+Since we have decided to implement dictionaries like it is done in Python, i.e. using the semantic \texttt{key:value} for the elements, we need to provide such an object.
 Essentially a W\_KeyValue object is just a wrapper for two values semantically splited by a colon.
-Like described in [\ref{dicts}] valid keys are of the type W\_String, W\_Integer or W\_Float.
-This object does not provide any built-in methods because it is just used within dictionaries.
+Like described in [\ref{dicts}] valid keys are of the type 'W\_String', 'W\_Integer' or 'W\_Float'. This object does not provide any built-in methods because it is just used within dictionaries.
+
+\section{Built-ins}
+In addition to the above mentioned data types, we have also added several built-in functions to enrich available functionality. Built-ins are either directly written using Python (see interpreter code - eval\_PrimitiveMethodCall) or by using already available "Simple" built-in functions and constructs. We have also provided examples as well as a test file (test\_doc\_examples.py) that demonstrates how built-ins are used.
+
+\subsection{Integer/Float}
+\label{intfloat}
+	The result of arithmetic operations where mixed numeric types are used eg. int and float, will always be of type float.
+
+\begin{itemize}
+\item add(x): Add a number x (int/float)
+
+Example: \textit{sum = 5 add(5)}
+
+\item sub(x): Substract a number x (int/float)
+
+Example: \textit{dif = 5 sub(5)}
+
+\item mul(x): Multiply with number x (int/float)
+
+Example: \textit{prod = 5 mul(5)}
+
+\item div(x): Divide with number x (int/float)
+
+Example: \textit{quot = 5 div(5)}
+
+\item equals(x): '$=$' operator (for int/float) - returns True/False
+
+Example: \textit{s = 5 equals(5)}
+
+\item less\_than(x): '$<$' operator (for int/float) - returns True/False
+
+Example: \textit{s = 5 less\_than(6)}
+
+\item less\_equal(x): '$<=$' operator (for int/float) - returns True/False
+
+Example: \textit{s = 5 less\_equal(5)}
+
+\item greater\_than(x): '$>$' operator (for int/float) - returns True/False
+
+Example: \textit{s = 6 greater\_than(5)}
+
+\item greater\_equal(x): '$>=$' operator (for int/float) - returns True/False
+
+Example: \textit{s = 5 greater\_equal(5)}
+\end{itemize}
+
+
+\subsection{String}
+\begin{itemize}
+\item len: Returns length of string
+
+Example: \textit{length = '01234' len}
+\item append(x): Append string x to string (appending a number does not convert number to string implicitly)
+
+Example: \textit{appended = '01234' append('56789')}
+\item reverse: Returns reversed version of string - keeps original string untouched
+
+Example: \textit{reversed = '0123456789' reverse}
+\item equals(x): Checks whether two strings are equal - returns boolean (True/False)
+
+Example: \textit{eq = '0123456789' equals('9876543210')}
+\item substring(x,y): Returns substring starting at x and ending before y
+
+Example: \textit{sub = "substring" substring(0,3)}
+\end{itemize}
+
+\subsection{Boolean}
+\subsection{List}
+\begin{itemize}
+\item add(x): Add element x to (end of) list
+
+Example: \\ \textit{l = [1,2,3]} \\ \textit{l add(4)}
+
+\item insert(x,y): Insert element y to list at position x - moves existing elements of list one position to the right. If position does not exisit, new element is simply added to the end of the list.
+
+Example: \\ \textit{l = [1,3]} \\ \textit{l insert(1,2)}
+
+\item replace(x,y): Replace element at position x with element y. If posiition does not exist, new element is simply added to the end of the list.
+
+Example: \\ \textit{l = [1,3]} \\ \textit{l replace(1,2)}
+
+\item del(x): Remove element at pos x from list
+
+Example: \\ \textit{l = [1]} \\ \textit{l del(0)}
+
+\item get(x): Get element at pos x from list
+
+Example: \textit{e = [1,2,3] get(0)}
+
+\item len: Get length of list
+
+Example: \textit{length = [1,2,3] len}
+
+\item reverse: Returns reversed version of list - keeps original list untouched
+
+Example: \textit{r = [1,2,3] reverse}
+
+\item oreverse: Returns reversed version of list - original list is modified
+
+Example: \textit{r = [1,2,3] oreverse}
+
+\item extend(x): Extends list by adding elements from x to left side (basically merge of two lists)
+
+Example: \textit{l = [1,2,3] extend([4,5,6])}
+
+\item clear: Clears list/Removes all stored elements
+
+Example: \\ \textit{l = [1,2,3]} \\ \textit{l clear}
+\end{itemize}
+
+\subsection{Dictionary}
+\label{builtin_dict}
+\subsection{Mixed}
+\begin{itemize}
+\item to\_int(x): Convert given float or string (if possible) to integer
+
+Example: \textit{i = to\_int(2.5)}
+
+\item to\_float(x): Convert given integer or string (if possible) to float
+
+Example: \textit{f = to\_float("2.5")}
+
+\item to\_str(x): Convert given integer or float to string
+
+Example: \textit{s = to\_str(1.337)}
+
+\item ceil(x): Returns the ceiling of x, the smallest integer greater than or equal to x.
+
+Example: \textit{ce = ceil(2.6)}
+
+\item floor(x): Returns the floor of x, the largest integer less than or equal to x.
+
+Example: \textit{fl = floor(2.6)}
+
+\item s\_range(x): Simple range - returns a list where first element is 0 and last element is x
+
+Example: \textit{l = s\_range(5)}
+
+\item e\_range(x,y): Extended range - returns a list where first element is x and last element is y
+
+Example: \textit{l = e\_range(5,10)}
+
+\item fibonacci(x): Returns the x-th number from the Fibonacci sequence
+
+Example: \textit{fib = fibonacci(8)}
+\end{itemize}
+
+
 
 \section{Conclusion}
 The mentioned extensions to the interpreter were implemented to provide the, in our opinion, most important language features that should be available before implementing additional extensions like a graphical user interface, coroutines or network support. We consider the current state of the interpreter as quite mature. The provided features make it possible to write reasonable programs using the 'Simple' programming language.
+
 
 \newpage
 
