@@ -5,7 +5,6 @@ from objmodel import W_Float, W_List, W_String, W_KeyValue, W_Dict, W_Boolean
 import default_builtins
 from math import floor, ceil
 
-
 class Interpreter(object):
 
     def __init__(self, builtincode=None):
@@ -32,42 +31,23 @@ class Interpreter(object):
 
     def eval_IntLiteral(self, ast, w_context):
         res = W_Integer(ast.value)
-        for i in w_context.getc3():
-            ctx = i.getvalue("inttrait")
-            if ctx:
-                break
-        res.parent = ctx
-
+        res.parent = add_trait_logic_to_ctx("inttrait", w_context)
         return res
 
     def eval_FloatLiteral(self, ast, w_context):
         res = W_Float(ast.value)
-        for i in w_context.getc3():
-            ctx = i.getvalue("floattrait")
-            if ctx:
-                break
-        res.parent = ctx
-
+        res.parent = add_trait_logic_to_ctx("floattrait", w_context)
         return res
 
     def eval_StringLiteral(self, ast, w_context):
         res = W_String(ast.value)
-        for i in w_context.getc3():
-            ctx = i.getvalue("stringtrait")
-            if ctx:
-                break
-        res.parent = ctx
-
+        res.parent = add_trait_logic_to_ctx("stringtrait", w_context)
         return res
+
 
     def eval_BoolLiteral(self, ast, w_context):
         res = W_Boolean(ast.value)
-        for i in w_context.getc3():
-            ctx = i.getvalue("booltrait")
-            if ctx:
-                break
-        res.parent = ctx
-
+        res.parent = add_trait_logic_to_ctx("booltrait", w_context)
         return res
 
     def eval_KeyValueLiteral(self, ast, w_context):
@@ -224,7 +204,7 @@ class Interpreter(object):
         return res
 
     def make_module(self):
-        # if No bultin provided -> use default buildins
+        # if No bultin provided -> use default builtins
         if self.builtin is None:
             builtin_module = W_NormalObject()
             self.eval(parse(default_builtins.builtin), builtin_module)
@@ -266,7 +246,6 @@ class Interpreter(object):
             pos = self.eval(ast.arguments[0], w_context).value
             element = self.eval(ast.arguments[1], w_context)
             l.replace(pos, element)
-
 
         if ast.methodname == "$dict_get_keys":
             l = self.eval(ast.receiver, w_context)
@@ -476,12 +455,7 @@ class Interpreter(object):
             part = self.eval(e, w_context)
             res.append(part)
         res = W_List(res)
-
-        for i in w_context.getc3():
-            ctx = i.getvalue("listtrait")
-            if ctx:
-                break
-        res.parent = ctx
+        res.parent = add_trait_logic_to_ctx("listtrait", w_context)
 
         return res
 
@@ -491,11 +465,13 @@ class Interpreter(object):
             part = self.eval(e, w_context)
             res.append(part)
         res = W_Dict(res)
-
-        for i in w_context.getc3():
-            ctx = i.getvalue("dicttrait")
-            if ctx:
-                break
-        res.parent = ctx
+        res.parent = add_trait_logic_to_ctx("dicttrait", w_context)
 
         return res
+
+def add_trait_logic_to_ctx(trait, w_context):
+    for i in w_context.getc3():
+        ctx = i.getvalue(trait)
+        if ctx:
+            break
+    return ctx
