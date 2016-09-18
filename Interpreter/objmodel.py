@@ -96,6 +96,9 @@ class W_Boolean(W_NormalObject):
         else:
             return False
 
+    def equal(self, param):
+        return self.value == param
+
     def clone(self):
         return W_Boolean(self.value)
 

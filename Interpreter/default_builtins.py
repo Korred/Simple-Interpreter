@@ -140,6 +140,12 @@ object booltrait:
     def xnor(x):
         self xor(x) not
 
+    def impl(x):
+        x or(self not)
+
+    def equals(x):
+        self $boolean_equal(x)
+
 object dicttrait:
     def add(x,y):
         self $dict_add(x,y)
