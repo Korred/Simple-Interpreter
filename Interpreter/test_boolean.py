@@ -130,6 +130,38 @@ b5 = b2 xnor(b4)
     assert w_module.getvalue("b4").value == True
     assert w_module.getvalue("b5").value == True
 
+def test_interpreter_boolean_implication():
+    ast = parse("""
+b1 = True impl(False)
+b2 = False impl(True)
+b3 = True and(True) impl(False nand(False nand(False or(True nor(False)))))
+b4 = False impl(False)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("b1").value == False
+    assert w_module.getvalue("b2").value == True
+    assert w_module.getvalue("b3").value == True
+    assert w_module.getvalue("b4").value == True
+
+def test_interpreter_boolean_equals():
+    ast = parse("""
+b1 = True equals(False)
+b2 = True equals(True)
+b3 = False equals(True and(True) not)
+b4 = False or(True) nand(False or(True)) equals(True)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+
+    assert w_module.getvalue("b1").value == False
+    assert w_module.getvalue("b2").value == True
+    assert w_module.getvalue("b3").value == True
+    assert w_module.getvalue("b4").value == False
+
 def test_interpreter_boolean_combined():
     ast = parse("""
 a = True
