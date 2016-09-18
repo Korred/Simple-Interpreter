@@ -245,8 +245,8 @@ class W_Dict(W_NormalObject):
         try:
             element = self.elements.get(key)
             return element
-        except IndexError:
-            raise IndexError("Provided Index does not exist!")
+        except KeyError:
+            raise KeyError("Provided Key does not exist!")
 
     def addelement(self, key, value):
         self.elements[key.value] = value
