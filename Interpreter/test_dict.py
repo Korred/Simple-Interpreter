@@ -300,3 +300,16 @@ while i:
     # all (logical 'and' between list elements)
     # any (logical 'or' between list elements)
     assert all(e in list_el for e in range(5))
+
+
+def test_interpreter_samekeys_dict():
+    ast = parse("""
+d = {}
+d add(1,2)
+d add(1,3)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    d = w_module.getvalue("d")
+    assert d.getelement(1).value == 3

@@ -183,6 +183,7 @@ else:
     assert w_module.getvalue("b2").value is True
     assert w_module.getvalue("b3").value is False
 
+
 def test_interpreter_string_substring():
     ast = parse("""
 s1 = "test"
@@ -203,6 +204,7 @@ sub6 = "" substring(0,5)
     assert w_module.getvalue("sub4").value == "ist ein"
     assert w_module.getvalue("sub5").value == "test"
     assert w_module.getvalue("sub6").value == ""
+
 
 def test_interpreter_string_in_string():
     ast = parse("""

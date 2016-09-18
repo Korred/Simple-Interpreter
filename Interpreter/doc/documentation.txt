@@ -36,7 +36,8 @@ Changes done to AST:
 - Added BoolLiteral (True/False)
 
 
-
+Float:
+The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type convertion of operands. Note that the result of arithmetic operations with mixed typed operands will always be of type 'W_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additional function for example comparistion operations can be found in the 'Built-ins' section.
 
 Added Built-ins:
 "A function that is built into an application and can be accessed by end-users"
@@ -65,16 +66,16 @@ INTEGER/FLOAT:
 	Example: s = 5 equals(5)
 
 	- less_than(x): '<' operator (for int/float) - returns True/False
-	Example: s = 5 less(6)
+	Example: s = 5 less_than(6)
 
-	- less_equals(x): '<=' operator (for int/float) - returns True/False
-	Example: s = 5 less_equals(5)
+	- less_equal(x): '<=' operator (for int/float) - returns True/False
+	Example: s = 5 less_equal(5)
 
 	- greater_than(x): '>' operator (for int/float) - returns True/False
-	Example: s = 6 greater(5)
+	Example: s = 6 greater_than(5)
 
-	- greater_equals(x): '>=' operator (for int/float) - returns True/False
-	Example: s = 5 greater_equals(5)
+	- greater_equal(x): '>=' operator (for int/float) - returns True/False
+	Example: s = 5 greater_equal(5)
 
 
 STRING:
@@ -88,8 +89,10 @@ STRING:
 	Example: reversed = '0123456789' reverse
 
 	- equals(x): Checks whether two strings are equal - returns boolean (TRUE/FALSE)
-	Example: 
-	eq = '0123456789' equals('9876543210')
+	Example: eq = '0123456789' equals('9876543210')
+
+	- substring(x,y): Returns substring starting at x and ending before y
+	Example: sub = "substring" substring(0,3)
 
 LIST:
 	- add(x): Add element x to (end of) list
@@ -134,17 +137,26 @@ LIST:
 		l clear
 
 DICT:
-	- add(x,y):
+	- add(x,y): Adds the key-value pair x:y to dictionary - replaces existing entry if keys are identical
 	Example:
+	d = {}
+	d add(1,"first")
 
-	- del(x):
+	- del(x): Removes dictionary entry with key x
 	Example:
+	d = {1:2,"3":4.0}
+	d del(1)
+	d del("3")
 
-	- get(x):
-	Example:
+	- get(x): Returns value for dictionary entry with key x
+	Example: 
+	d = {1:"a"}
+	e = d get(1)
 
-	- get_keys(x):
+	- get_keys: Returns all keys stored in dicitionary as list
 	Example:
+	d = {1:2,2:3,3:4}
+	keys = d getkeys
 
 	- contains(x):
 	Example:

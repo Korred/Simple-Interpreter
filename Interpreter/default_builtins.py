@@ -159,8 +159,8 @@ object dicttrait:
     def get(x):
         self $dict_get(x)
 
-    def get_keys(x):
-        self $dict_get_keys(x)
+    def get_keys:
+        self $dict_get_keys
 
     def contains(x):
         self $dict_contains(x)
