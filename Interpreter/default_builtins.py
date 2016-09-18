@@ -68,6 +68,9 @@ object stringtrait:
     def equals(x):
         self $string_equals(x)
 
+    def substring(x,y):
+        self $string_substring(x,y)
+
 object listtrait:
     def add(x):
         self $list_add(x)

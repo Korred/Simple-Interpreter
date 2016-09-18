@@ -283,6 +283,12 @@ class Interpreter(object):
             s2 = self.eval(ast.arguments[0], w_context)
             return W_Boolean(s.equals(s2))
 
+        if ast.methodname == "$string_substring":
+            s = self.eval(ast.receiver, w_context)
+            start = self.eval(ast.arguments[0], w_context)
+            end = self.eval(ast.arguments[1], w_context)
+            return W_Boolean(s.substring(start,end))
+
         if ast.methodname in ("$list_get", "$dict_get"):
             l = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value

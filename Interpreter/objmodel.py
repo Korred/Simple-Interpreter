@@ -153,6 +153,10 @@ class W_String(W_NormalObject):
         else:
             return False
 
+    def substring(self, start, end):
+        # use python's slicing, if start > end return an empty string
+        return self.value[start.value:end.value]
+
     def istrue(self):
         return self.value != ""
 
