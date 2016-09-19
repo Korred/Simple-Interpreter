@@ -12,7 +12,7 @@
 \begin{abstract}
 The purpose of this project was to extend the 'Simple' Programming Language.
 During the semester we have build our own implementation of the object model and interpreter, which were both based
-on the previously provided 'Simple' parser, lexer and AST. The below described extension provides support for additional data types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
+on the previously provided 'Simple' parser, lexer and AST model. The below described extension provides support for additional data types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
 \end{abstract}
 
 \section{Changes}
@@ -22,7 +22,7 @@ on the previously provided 'Simple' parser, lexer and AST. The below described e
 The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type convertion of operands. Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additionals function for example comparistion operations can be found in the 'Built-ins' section [\ref{intfloat}].
 
 \subsection{Boolean}
-In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Bool' object extending 'W\_NormalObject'.
+In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Boolean' object extending 'W\_NormalObject'.
 This type has several built-in methods to combine boolean expressions like and, or, not, nor, nand, xor and xnor.
 The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a boolean value. Examples can be found in the "Built-ins" section below.
 
@@ -40,7 +40,7 @@ Relating to the semantics of a dictionary we decided to represent each element a
 
 \subsection{Key-Value Tuple}
 Since we have decided to implement dictionaries like it is done in Python, i.e. using the semantic \texttt{key:value} for the elements, we need to provide such an object.
-Essentially a W\_KeyValue object is just a wrapper for two values semantically splited by a colon.
+Essentially a 'W\_KeyValue' object is just a wrapper for two values semantically splited by a colon.
 Like described in [\ref{dicts}] valid keys are of the type 'W\_String', 'W\_Integer' or 'W\_Float'. This object does not provide any built-in methods because it is just used within dictionaries.
 
 \section{Built-ins}
@@ -103,7 +103,8 @@ Example: \textit{reversed = '0123456789' reverse}
 \item equals(x): Checks whether two strings are equal - returns boolean (True/False)
 
 Example: \textit{eq = '0123456789' equals('9876543210')}
-\item substring(x,y): Returns substring starting at x and ending before y
+\item substring(x,y): Returns substring starting at x and ending before y.
+In case of y \ge x or when both values are out of the string's size the method returns an empty string.
 
 Example: \textit{sub = "substring" substring(0,3)}
 \end{itemize}
@@ -153,6 +154,7 @@ Example: \\ \textit{l = [1,2,3]} \\ \textit{l clear}
 \end{itemize}
 
 \subsection{Dictionary}
+
 \label{builtin_dict}
 \subsection{Mixed}
 \begin{itemize}
