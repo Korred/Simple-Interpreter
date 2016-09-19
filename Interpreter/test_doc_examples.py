@@ -181,7 +181,7 @@ length = {'a':1,'b':2} len
     assert w_module.getvalue("map2").elements == {}
     assert w_module.getvalue("value").value == 2
     keys = w_module.getvalue("keys").elements
-    assert [k.value for k in keys] == ['b','a']
+    assert [k.value for k in keys] in [['a','b'],['b','a']]
     assert w_module.getvalue("check").value is True
     assert w_module.getvalue("length").value == 2
 
