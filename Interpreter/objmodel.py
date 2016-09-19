@@ -78,16 +78,10 @@ class W_Boolean(W_NormalObject):
         return not(self.value)
 
     def simpleand(self, param):
-        if self.value and param:
-            return True
-        else:
-            return False
+        return self.value and param
 
     def simpleor(self, param):
-        if self.value or param:
-            return True
-        else:
-            return False
+        return self.value or param
 
     def simplexor(self, param):
         return self.value ^ param
@@ -144,10 +138,7 @@ class W_String(W_NormalObject):
         return self.value[::-1]
 
     def equals(self, string):
-        if (self.value == string.value):
-            return True
-        else:
-            return False
+        return self.value == string.value
 
     def substring(self, start, end):
         # use python's slicing, if start > end return an empty string
