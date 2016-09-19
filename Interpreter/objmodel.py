@@ -90,11 +90,7 @@ class W_Boolean(W_NormalObject):
             return False
 
     def simplexor(self, param):
-        if ((self.value and not(param)) or
-           (not(self.value) & param)):
-            return True
-        else:
-            return False
+        return self.value ^ param
 
     def equal(self, param):
         return self.value == param

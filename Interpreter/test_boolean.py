@@ -125,10 +125,10 @@ b5 = b2 xnor(b4)
     interpreter.eval(ast, w_module)
 
     assert w_module.getvalue("b1").value is False
-    assert w_module.getvalue("b2").value is True
+    assert w_module.getvalue("b2").value is False
     assert w_module.getvalue("b3").value is True
     assert w_module.getvalue("b4").value is True
-    assert w_module.getvalue("b5").value is True
+    assert w_module.getvalue("b5").value is False
 
 def test_interpreter_boolean_implication():
     ast = parse("""
