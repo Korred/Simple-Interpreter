@@ -109,6 +109,45 @@ Example: \textit{sub = "substring" substring(0,3)}
 \end{itemize}
 
 \subsection{Boolean}
+\begin{itemize}
+\item not: If the left side is False, then True, else False
+
+Example: \textit{b = True not}
+
+\item and(x): If the left side is False, then False, else x
+
+Example: \textit{b = True and(False)}
+
+\item or(x): If the left side is False, then x, else True
+
+Example: \textit{b = True or(False)}
+
+\item nand(x): negation of 'and' operation
+
+Example: \textit{b = True nand(False)}
+
+\item nor(x): negation of 'or' operation
+
+Example: \textit{b = True nor(False)}
+
+\item xor(x): exclusive or - True if one side only is true - otherwise False
+
+Example: \textit{b = True xor(True)}
+
+\item xnor(x): exclusive 'nor' operation
+
+Example: \textit{b = True xnor(False)}
+
+\item impl(x): Implication '$\Rightarrow$' 
+
+Example: \textit{b = True impl(True)}
+
+\item equals(x): Simple comparison whether left sind and x are equal
+
+Example: \textit{b = True equals(True)}
+\end{itemize}
+
+
 \subsection{List}
 \begin{itemize}
 \item add(x): Add element x to (end of) list

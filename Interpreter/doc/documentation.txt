@@ -165,13 +165,32 @@ DICT:
 	Example:
 
 BOOLEAN:
-	- not:
-	- and(x):
-	- or(x):
-	- nand(x):
-	- nor(x):
-	- xor(x):
-	- xnor(x):
+	- not: If the left side is False, then True, else False
+	Example: b = True not
+
+	- and(x): If the left side is False, then False, else x
+	Example: b = True and(False)
+
+	- or(x): If the left side is False, then x, else True
+	Example: b = True or(False)
+
+	- nand(x): negation of 'and' operation
+	Example: b = True nand(False)
+
+	- nor(x): negation of 'or' operation
+	Example: b = True nor(False)
+
+	- xor(x): exclusive or - True if one side only is true - otherwise False
+	Example: b = True xor(True)
+
+	- xnor(x): exclusive 'nor' operation
+	Example: b = True xnor(False)
+
+	- impl(x): Implication '=>' 
+	Example: b = True impl(True)
+
+	- equals(x): Simple comparison whether left sind and x are equal
+	Example: b = True equals(True)
 
 MIXED:
 
