@@ -12,11 +12,11 @@
 \begin{abstract}
 The purpose of this project was to extend the 'Simple' Programming Language.
 During the semester we have build our own implementation of the object model and interpreter, which were both based
-on the previously provided 'Simple' parser, lexer and AST. The below described extension provides support for additional data types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
+on the previously provided 'Simple' parser, lexer and the AST model. The below described extension provides support for additional data types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
 \end{abstract}
 
 \section{Changes}
-Starting with the project, as of excercise 10, there were serveral interpreter componenets that we had to modify in order to implement the request data types. The below description for each component should serve as a short overview on what changes were necessary. To not blow out of proportion this documentation, we will focus on the most imporant changes and we will not discuss every new line of code. A full change list can be obtained following our git commit history.
+Starting with the project, as of excercise 10, there were several interpreter components that we had to modify in order to implement the request data types. The below description for each component should serve as a short overview on what changes were necessary. To not blow out of proportion this documentation, we will focus on the most important changes and we will not discuss every new line of code. A full change list can be obtained following our git commit history.
 
 \subsection{Lexer}
 Lexer changes were limited to the addition of new regular expressions and tokens. In order to support the Float data type, we had to modify the existing Integer regular expression so that it does not intersect with the new Float regular expression. Additional regular expressions were needed for List and Dictionary where we had to add new tokens for square and curly brackets. (ListOpenBracket, ListCloseBracket, MapOpenBracket ,MapCloseBracket) Lastly we have also added another regular expression and token for booleans to catch \textbf{True} and \textbf{False}.
@@ -46,7 +46,7 @@ The new 'W\_Float' type follows the previously available 'W\_Integer' definition
 Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additionals function, for example comparistion operations, can be found in the 'Built-ins' section [\ref{intfloat}].
 
 \subsection{Boolean}
-In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Bool' object extending 'W\_NormalObject'.\\
+In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Boolean' object extending 'W\_NormalObject'.\\
 \\ Boolean example: \textit{t = True} or \textit{f = False} \\\\
 This type has several built-in methods to combine boolean expressions like and, or, not, nor, nand, xor and xnor.
 The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a boolean value. Examples can be found in the "Built-ins" section below.
@@ -97,6 +97,14 @@ Example: \textit{prod = 5 mul(5)}
 \item div(x): Divide with number x (int/float)
 
 Example: \textit{quot = 5 div(5)}
+
+\item mod(x): Calculate the number modulo x
+
+Example: \textit{mod = 12 mod(2)}
+
+\item sqrt(x): Calculate the number's square root - returns a float
+
+Example: \textit{root = 12 sqrt}
 
 \item equals(x): '$=$' operator (for int/float) - returns True/False
 
