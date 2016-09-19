@@ -234,3 +234,43 @@ err = f greater_equal(d)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     py.test.raises(TypeError, interpreter.eval, ast, w_module)
+
+def test_float_int_sqrt():
+    ast = parse("""
+a = 5.0 sqrt
+b = 4 sqrt
+c = 144 sqrt
+d = 1021 sqrt
+e = 0 sqrt
+f = 23.12 sqrt
+g = 162.21 sqrt
+h = 102.002 sqrt
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("a").value == 2.23606797749979
+    assert w_module.getvalue("b").value == 2.0
+    assert w_module.getvalue("c").value == 12.0
+    assert w_module.getvalue("d").value == 31.953090617340916
+    assert w_module.getvalue("e").value == 0.0
+    assert w_module.getvalue("f").value == 4.8083261120685235
+    assert w_module.getvalue("g").value == 12.736168968728391
+    assert w_module.getvalue("h").value == 10.099603952631014
+
+def test_int_modulo():
+    ast = parse("""
+a = 2 mod(2)
+b = 122 mod(3)
+c = 65 mod(432)
+d = 128 mod(2)
+e = 61261 mod(72)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("a").value == 0
+    assert w_module.getvalue("b").value == 2
+    assert w_module.getvalue("c").value == 65
+    assert w_module.getvalue("d").value == 0
+    assert w_module.getvalue("e").value == 61
