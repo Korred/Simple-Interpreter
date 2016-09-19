@@ -158,11 +158,15 @@ DICT:
 	d = {1:2,2:3,3:4}
 	keys = d getkeys
 
-	- contains(x):
+	- contains(x): Checks whether a dictionary entry for key x exists
 	Example:
+	d = {1:2,2:3,3:4}
+	b = d contains(1)
 
-	- len(x):
+	- len: Returns dictionary length - number of dicitionary entries
 	Example:
+	d = {1:2,2:3,3:4}
+	b = d len
 
 BOOLEAN:
 	- not: If the left side is False, then True, else False
