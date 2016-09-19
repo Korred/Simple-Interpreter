@@ -62,6 +62,12 @@ INTEGER/FLOAT:
 	- div(x): Divide a number x (int/float)
 	Example: quot = 5 div(5)
 
+	- mod(x): Calculate the number modulo x
+	Example: mod = 12 mod(2)
+
+	sqrt(x): Calculate the number's square root - returns a float
+	Example: root = 12 sqrt
+
 	- equals(x): '==' operator (for int/float) - returns True/False
 	Example: s = 5 equals(5)
 
@@ -221,3 +227,10 @@ MIXED:
 
 	- fibonacci(x): Returns the x-th number from the Fibonacci sequence
 	Example: fib = fibonacci(8)
+
+	- ggT(x,y): Returns the greatest divisor of x and y using the euclidian algorithm.
+	Example: divisor = ggT(12,144)
+
+	- isPrime(x): Checks if the given number is a prime number.
+	Example: prime = isPrime(13)
+
