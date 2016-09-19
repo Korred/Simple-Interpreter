@@ -16,27 +16,57 @@ on the previously provided 'Simple' parser, lexer and AST. The below described e
 \end{abstract}
 
 \section{Changes}
+Starting with the project, as of excercise 10, there were serveral interpreter componenets that we had to modify in order to implement the request data types. The below description for each component should serve as a short overview on what changes were necessary. To not blow out of proportion this documentation, we will focus on the most imporant changes and we will not discuss every new line of code. A full change list can be obtained following our git commit history.
+
+\subsection{Lexer}
+Lexer changes were limited to the addition of new regular expressions and tokens. In order to support the Float data type, we had to modify the existing Integer regular expression so that it does not intersect with the new Float regular expression. Additional regular expressions were needed for List and Dictionary where we had to add new tokens for square and curly brackets. (ListOpenBracket, ListCloseBracket, MapOpenBracket ,MapCloseBracket) Lastly we have also added another regular expression and token for booleans to catch \textbf{True} and \textbf{False}.
+
+\subsection{Parser}
+Following the lexer changes, we had to modify the 'Simple' parser to include new parser production rules. Here for each additional data type a new basic expression production rule was created that was responsible for returning the proper AST node construct.
+
+\subsection{Abstract Syntax Tree}
+In order to connect the tokens provided by the Lexer within an AST, we also needed to create new AST node defintions. Therefore, we have added 6 new literals (FloatLiteral, StringLiteral, BoolLiteral, KeyValueLiteral, ListLiteral, DictLiteral).
+
+\subsection{Object model}
+Implementing and working with the new 'Simple' data types required also changes to the object model. Same as before, we added 6 new obejcts, one for each new data type. All extend the 'W\_NormalObject' prototype and include additional methods that allow certain object interaction needed for the interpreter code.
+
+\subsection{Interpreter}
+Lastly there were major changes to the interpreter code itself. Besides definiting additional 'eval' cases, it was also necessary to modify the 'eval\_MethodCall' and 'eval\_PrimitiveMethodCall' definitions. Especially inside 'eval\_PrimitiveMethodCall' we added code to handle built-ins for each new data type.
+
+
+\subsection{Built-ins}
+More information regarding added default built-ins can be found in [\ref{bins}]
+
 
 \section{New Data Types}
 \subsection{Integer/Float}
-The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type convertion of operands. Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additionals function for example comparistion operations can be found in the 'Built-ins' section [\ref{intfloat}].
+The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type convertion of operands. \\
+\\ Integer example: \textit{i = 1337} or \textit{i = -666} 
+\\ Float example: \textit{f = 1.337} or \textit{f = -6.66} \\\\
+Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additionals function, for example comparistion operations, can be found in the 'Built-ins' section [\ref{intfloat}].
 
 \subsection{Boolean}
-In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Bool' object extending 'W\_NormalObject'.
+In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Bool' object extending 'W\_NormalObject'.\\
+\\ Boolean example: \textit{t = True} or \textit{f = False} \\\\
 This type has several built-in methods to combine boolean expressions like and, or, not, nor, nand, xor and xnor.
 The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a boolean value. Examples can be found in the "Built-ins" section below.
 
 
 \subsection{String}
-The string object 'W\_String' extends 'W\_NormalObject' and is True if the string's value is not empty.
-This type provides some additional built-in methods to be able to combine or compare several strings.
+The string object 'W\_String' extends 'W\_NormalObject' and is True if the strings' value is not empty. Following Python style, strings can be written using single and/or double quotation marks.\\
+\\ String example: \textit{s1 = "string1"} or \textit{s2 = 'string1'} \\\\
+This type provides some additional built-in methods to be able to combine, modify or compare several strings.
 
 \subsection{List}
+The new list object 'W\_List' follows Python logic. It supports any given element (list of lists/dicts/strings/ints/floats/booleans) as well as lists with mixed elements.\\
+\\ List example: \textit{list = [1,2.5,"string",[1,2],\{1:2\},True]} \\\\
+We have also provided several built-in functions [\ref{listbuilt}] that allow inspection and modification of lists.
 
 \subsection{Dictionary}
 \label{dicts}
 The dictionary object 'W\_Dict' extends 'W\_NormalObject' and is internally implemented using a Python dictionary.
-Relating to the semantics of a dictionary we decided to represent each element as a key-value tuple, the same way it is done in Python, i.e. using the form \texttt{key:value} for its elements. In addition, lists and dictionaries may not be used as keys. Therefore only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python). Furthermore we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
+Relating to the semantics of a dictionary we decided to represent each element as a key-value tuple, the same way it is done in Python, i.e. using the form \texttt{key:value} for its elements. \\\\ Dictionary example: \textit{dict = \{1:2, 1.0:2.0, "key":"value", 2:[1], 3:\{1:2\}\}} \\\\
+As can be seen, lists and dictionaries may not be used as keys. Therefore only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python). Furthermore we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
 
 \subsection{Key-Value Tuple}
 Since we have decided to implement dictionaries like it is done in Python, i.e. using the semantic \texttt{key:value} for the elements, we need to provide such an object.
@@ -44,6 +74,7 @@ Essentially a W\_KeyValue object is just a wrapper for two values semantically s
 Like described in [\ref{dicts}] valid keys are of the type 'W\_String', 'W\_Integer' or 'W\_Float'. This object does not provide any built-in methods because it is just used within dictionaries.
 
 \section{Built-ins}
+\label{bins}
 In addition to the above mentioned data types, we have also added several built-in functions to enrich available functionality. Built-ins are either directly written using Python (see interpreter code - eval\_PrimitiveMethodCall) or by using already available "Simple" built-in functions and constructs. We have also provided examples as well as a test file (test\_doc\_examples.py) that demonstrates how built-ins are used.
 
 \subsection{Integer/Float}
@@ -149,6 +180,7 @@ Example: \textit{b = True equals(True)}
 
 
 \subsection{List}
+\label{listbuilt}
 \begin{itemize}
 \item add(x): Add element x to (end of) list
 
@@ -193,6 +225,39 @@ Example: \\ \textit{l = [1,2,3]} \\ \textit{l clear}
 
 \subsection{Dictionary}
 \label{builtin_dict}
+\begin{itemize}
+\item add(key,value): Adds a key-value tuple to the dictionary - replaces existing entry if keys are identical
+
+Example: \\ 
+\textit{map = \{'a':1\} \\
+map add('b',2)}
+
+\item del(key): Delete a tuple from the dictionary with given key. 
+
+Example: \\ 
+\textit{map = \{'a':1\} \\
+map del('a')}
+
+\item get(key): Get a value from the dictionary for a given key.
+
+Example: \textit{value = \{'a':1,'b':2\} get('b')}
+
+\item get\_keys: Returns a 'W\_List' of all keys from the dictionary.
+
+Example: \textit{keys = \{'a':1,'b':2\} get\_keys}
+
+\item contains: Checks whether a dictionary contains a given key, returns True or False.
+
+Example: \textit{check = \{'a':1,'b':2\} contains('a')}
+
+\item len: Returns the length of the dictionary, i.e. the amount of stored key-value tuples.
+
+Example: \textit{length = \{'a':1,'b':2\} len}
+
+\end{itemize}
+
+
+
 \subsection{Mixed}
 \begin{itemize}
 \item to\_int(x): Convert given float or string (if possible) to integer
