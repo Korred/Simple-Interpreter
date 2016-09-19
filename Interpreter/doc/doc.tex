@@ -104,7 +104,7 @@ Example: \textit{reversed = '0123456789' reverse}
 
 Example: \textit{eq = '0123456789' equals('9876543210')}
 \item substring(x,y): Returns substring starting at x and ending before y.
-In case of y \ge x or when both values are out of the string's size the method returns an empty string.
+In case of $y \ge x$ or when both values are out of the string's size the method returns an empty string.
 
 Example: \textit{sub = "substring" substring(0,3)}
 \end{itemize}
@@ -193,8 +193,35 @@ Example: \\ \textit{l = [1,2,3]} \\ \textit{l clear}
 \end{itemize}
 
 \subsection{Dictionary}
-
 \label{builtin_dict}
+\begin{itemize}
+\item add(key,value): Add a tuple of key and value to the dictionary. If the key already exists the element gets overwritten by the new value.
+
+Example: \textit{map = \{'a':1\} add('b',2)}
+
+\item del(key): Delete a tuple from the dictionary with a given key. 
+
+Example: \textit{map = \{'a':1\} del('a')}
+
+\item get(key): Get a value from the dictionary for a given key.
+
+Example: \textit{value = \{'a':1,'b':2\} get('b')}
+
+\item get\_keys: Return a 'W\_List' of all keys from the dictionary.
+
+Example: \textit{keys = \{'a':1,'b':2\} get\_keys}
+
+\item contains: Check if a dictionary contains a given key, returns True/False.
+
+Example: \textit{check = \{'a':1,'b':2\} contains('a')}
+
+\item len: Return the length of the dictionary, i.e. the amount of stored key-value tuples.
+
+Example: \textit{length = \{'a':1,'b':2\} len}
+
+\end{itemize}
+
+
 \subsection{Mixed}
 \begin{itemize}
 \item to\_int(x): Convert given float or string (if possible) to integer
