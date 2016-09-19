@@ -161,6 +161,29 @@ l8 clear
     assert [l.value for l in l7] == [1, 2, 3, 4, 5, 6]
     assert [l.value for l in l8] == []
 
+def test_doc_dict():
+    ast = parse("""
+map1 = {'a':1} 
+map1 add('b',2)
+map2 = {'a':1} 
+map2 del('a')
+value = {'a':1,'b':2} get('b')
+keys = {'a':1,'b':2} get_keys
+check = {'a':1,'b':2} contains('a')
+length = {'a':1,'b':2} len
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    
+    assert w_module.getvalue("map1").getelement("a").value == 1
+    assert w_module.getvalue("map1").getelement("b").value == 2
+    assert w_module.getvalue("map2").elements == {}
+    assert w_module.getvalue("value").value == 2
+    keys = w_module.getvalue("keys").elements
+    assert [k.value for k in keys] in [['a','b'],['b','a']]
+    assert w_module.getvalue("check").value is True
+    assert w_module.getvalue("length").value == 2
 
 def test_doc_mixed():
     ast = parse("""
