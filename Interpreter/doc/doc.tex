@@ -19,7 +19,7 @@ on the previously provided 'Simple' parser, lexer and the AST model. The below d
 Starting with the project, as of exercise 10, there were several interpreter components that we had to modify in order to implement the requested data types. The below description for each component should serve as a short overview on what changes were necessary. To not blow out of proportion this documentation, we will focus on the most important changes and we will not discuss every new line of code. A full list of changes can be obtained following our git commit history.
 
 \subsection{Lexer}
-Lexer changes were limited to the addition of new regular expressions and tokens. In order to support the Float data type, we had to modify the existing Integer regular expression so that it does not intersect with the new Float regular expression. Additional regular expressions were needed for List and Dictionary where we had to add new tokens for square and curly brackets. (ListOpenBracket, ListCloseBracket, MapOpenBracket ,MapCloseBracket) Lastly we have also added another regular expression and token for Booleans to handle \textbf{True} and \textbf{False} statements.
+Lexer changes were limited to the addition of new regular expressions and tokens. In order to support the Float data type, we had to modify the existing Integer regular expression so that it does not intersect with the new Float regular expression. Additional regular expressions were needed for List and Dictionary where we had to add new tokens for square and curly brackets (ListOpenBracket, ListCloseBracket, MapOpenBracket ,MapCloseBracket). Furthermore, we added a regular expression and token for Booleans to handle \textbf{True} and \textbf{False} statements.
 
 \subsection{Parser}
 Following the lexer changes, we had to modify the 'Simple' parser to include new parser production rules. Here for each additional data type a new basic expression production rule was created that was responsible for returning the proper AST node construct.
@@ -28,7 +28,7 @@ Following the lexer changes, we had to modify the 'Simple' parser to include new
 In order to connect the tokens provided by the Lexer within an AST, we also needed to create new AST node definitions. Therefore, we have added 6 new literals (FloatLiteral, StringLiteral, BoolLiteral, KeyValueLiteral, ListLiteral, DictLiteral).
 
 \subsection{Object model}
-Implementing and working with the new 'Simple' data types required also changes to the object model. Same as before, we added 6 new objects, one for each new data type. All objects extend the 'W\_NormalObject' prototype and include additional methods that allow certain object interaction needed for the interpreter code.
+Implementing and working with the new 'Simple' data types also required changes to the object model. Same as before, we added 6 new objects, one for each new data type. All objects extend the 'W\_NormalObject' prototype and include additional methods that allow certain object interaction needed for the interpreter code.
 
 \subsection{Interpreter}
 Lastly there were major changes to the interpreter code itself. Besides defining additional 'eval' cases, it was also necessary to modify the 'eval\_MethodCall' and 'eval\_PrimitiveMethodCall' definitions. Especially inside 'eval\_PrimitiveMethodCall' we added code to handle built-ins for each new data type.
@@ -46,14 +46,14 @@ The new 'W\_Float' type follows the previously available 'W\_Integer' definition
 Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type conversion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additional functions, for example comparison operations, can be found in the 'Built-ins' section [\ref{intfloat}].
 
 \subsection{Boolean}
-In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Boolean' object extending 'W\_NormalObject'.\\
+In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Boolean' object.\\
 \\ Boolean example: \textit{t = True} or \textit{f = False} \\\\
-This type has several built-in methods to combine Boolean expressions like and, or, not, nor, nand, xor and xnor.
+This type provides several built-in methods yielding the common logical operators.
 The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a Boolean value. Examples can be found in the "Built-ins" section below.
 
 
 \subsection{String}
-The string object 'W\_String' extends 'W\_NormalObject' and is True if the strings' value is not empty. Following Python style, strings can be written using single and/or double quotation marks.\\
+The string object 'W\_String' is validated True if the strings' value is not empty. Following Python style, strings can be written using single and/or double quotation marks.\\
 \\ String example: \textit{s1 = "string1"} or \textit{s2 = 'string1'} \\\\
 This type provides some additional built-in methods to be able to combine, modify or compare several strings.
 
@@ -64,9 +64,11 @@ We have also provided several built-in functions [\ref{listbuilt}] that allow in
 
 \subsection{Dictionary}
 \label{dicts}
-The dictionary object 'W\_Dict' extends 'W\_NormalObject' and is internally implemented using a Python dictionary.
+The dictionary object 'W\_Dict' is internally implemented using a Python dictionary.
 Relating to the semantics of a dictionary we decided to represent each element as a key-value tuple, the same way it is done in Python, i.e. using the form \texttt{key:value} for its elements. \\\\ Dictionary example: \textit{dict = \{1:2, 1.0:2.0, "key":"value", 2:[1], 3:\{1:2\}\}} \\\\
-As can be seen, lists and dictionaries may not be used as keys. Therefore, only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python). Furthermore, we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
+As can be seen, lists and dictionaries may not be used as keys. Therefore, only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python).
+
+Furthermore, we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
 
 \subsection{Key-Value Tuple}
 Since we have decided to implement dictionaries like it is done in Python, i.e. using the semantic \texttt{key:value} for the elements, we need to provide such an object.
