@@ -79,6 +79,32 @@ n_eq = appended equals(str3)
     assert w_module.getvalue("n_eq").value is False
 
 
+def test_doc_boolean():
+    ast = parse("""
+b1 = True not
+b2 = True and(False)
+b3 = True or(False)
+b4 = True nand(False)
+b5 = True nor(False)
+b6 = True xor(True)
+b7 = True xnor(False)
+b8 = True impl(True)
+b9 = True equals(True)
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("b1").value is False
+    assert w_module.getvalue("b2").value is False
+    assert w_module.getvalue("b3").value is True
+    assert w_module.getvalue("b4").value is True
+    assert w_module.getvalue("b5").value is False
+    assert w_module.getvalue("b6").value is False
+    assert w_module.getvalue("b7").value is False
+    assert w_module.getvalue("b8").value is True
+    assert w_module.getvalue("b9").value is True
+
+
 def test_doc_list():
     ast = parse("""
 l1 = [1,2,3]
