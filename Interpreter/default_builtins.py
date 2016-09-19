@@ -46,6 +46,9 @@ object floattrait:
     def div(x):
         self $float_div(x)
 
+    def mod(x):
+        self $float_modulo(x)
+
     def equals(x): # ==
         self $float_eq(x)
    

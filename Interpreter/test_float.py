@@ -274,3 +274,14 @@ e = 61261 mod(72)
     assert w_module.getvalue("c").value == 65
     assert w_module.getvalue("d").value == 0
     assert w_module.getvalue("e").value == 61
+
+
+def test_float_modulo():
+    ast = parse("""
+a = 3.4 mod(3.4)
+# other tests dont make sense here
+""")
+    interpreter = Interpreter()
+    w_module = interpreter.make_module()
+    interpreter.eval(ast, w_module)
+    assert w_module.getvalue("a").value == 0

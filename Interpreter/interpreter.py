@@ -331,6 +331,11 @@ class Interpreter(object):
             param = self.eval(ast.arguments[0], w_context).value
             return W_Integer(b.value % param)
 
+        if ast.methodname == "$float_modulo":
+            b = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context).value
+            return W_Float(b.value % param)
+
         # ceil/floor logic
         if ast.methodname in ("$ceil", "$floor"):
             param = self.eval(ast.arguments[0], w_context)
