@@ -3,7 +3,7 @@ from simpleparser import parse
 from objmodel import W_Integer, W_Method, W_NormalObject
 from objmodel import W_Float, W_List, W_String, W_KeyValue, W_Dict, W_Boolean
 import default_builtins
-from math import floor, ceil
+from math import floor, ceil, sqrt
 
 class Interpreter(object):
 
@@ -321,6 +321,15 @@ class Interpreter(object):
             b = self.eval(ast.receiver, w_context)
             param = self.eval(ast.arguments[0], w_context).value
             return W_Boolean(b.equal(param))
+
+        if ast.methodname == "$sqrt":
+            b = self.eval(ast.receiver, w_context)
+            return W_Float(sqrt(b.value))
+        
+        if ast.methodname == "$int_modulo":
+            b = self.eval(ast.receiver, w_context)
+            param = self.eval(ast.arguments[0], w_context).value
+            return W_Integer(b.value % param)
 
         # ceil/floor logic
         if ast.methodname in ("$ceil", "$floor"):

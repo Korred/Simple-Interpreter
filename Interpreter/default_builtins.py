@@ -12,6 +12,12 @@ object inttrait:
     def div(x):
         self $int_div(x)
 
+    def sqrt(x):
+        self $sqrt(x)
+
+    def mod(x):
+        self $int_modulo(x)
+
     def equals(x): # ==
         self $int_eq(x)
 
@@ -42,6 +48,9 @@ object floattrait:
 
     def equals(x): # ==
         self $float_eq(x)
+   
+    def sqrt(x):
+        self $sqrt(x)
 
     def less_than(x): # <
         self $float_less(x)
@@ -216,4 +225,31 @@ def fibonacci(x):
         b = t
         k = k sub(1)
     a
+
+def ggT(x,y):
+    if x equals(0):
+        y
+    else:
+        while y equals(0) not:
+            if x greater_than(y):
+                x = x sub(y)
+            else:
+                y = y sub(x)
+        x
+
+def isPrime(x):
+    if x equals(1):
+        True
+    else:
+        if x mod(2) equals(0):
+            False
+        else:
+            cur = 3
+            stop = x sqrt
+            while cur less_equal(stop):
+                if x mod(cur) equals(0):
+                    False
+                else:
+                    cur = cur add(2)
+            True
 """
