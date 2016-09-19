@@ -226,7 +226,7 @@ def fibonacci(x):
         k = k sub(1)
     a
 
-def ggT(x,y):
+def gcd(x,y):
     if x equals(0):
         y
     else:

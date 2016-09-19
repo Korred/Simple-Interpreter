@@ -3,14 +3,14 @@ from simplelexer import lex
 from interpreter import Interpreter
 from simpleast import *
 
-def test_interpreter_ggT():
+def test_interpreter_gcd():
     ast = parse("""
-a = ggT(14,7)
-b = ggT(613,412)
-c = ggT(1212,123)
-d = ggT(44,4444)
-e = ggT(1623,123243)
-f = ggT(12064,534)
+a = gcd(14,7)
+b = gcd(613,412)
+c = gcd(1212,123)
+d = gcd(44,4444)
+e = gcd(1623,123243)
+f = gcd(12064,534)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()

@@ -10,28 +10,28 @@
 \maketitle
 
 \begin{abstract}
-The purpose of this project was to extend the 'Simple' Programming Language.
+The purpose of this project was to extend the 'Simple' programming language.
 During the semester we have build our own implementation of the object model and interpreter, which were both based
 on the previously provided 'Simple' parser, lexer and the AST model. The below described extension provides support for additional data types (boolean, float, string, list, map/dict), as well as related built-in functions/operations that are commonly available when working with these types. As a starting point for this project we have decided to use our own implementation of the interpreter, instead of the one that was provided to us at the end of the course exercises. 
 \end{abstract}
 
 \section{Changes}
-Starting with the project, as of excercise 10, there were several interpreter components that we had to modify in order to implement the request data types. The below description for each component should serve as a short overview on what changes were necessary. To not blow out of proportion this documentation, we will focus on the most important changes and we will not discuss every new line of code. A full change list can be obtained following our git commit history.
+Starting with the project, as of exercise 10, there were several interpreter components that we had to modify in order to implement the requested data types. The below description for each component should serve as a short overview on what changes were necessary. To not blow out of proportion this documentation, we will focus on the most important changes and we will not discuss every new line of code. A full list of changes can be obtained following our git commit history.
 
 \subsection{Lexer}
-Lexer changes were limited to the addition of new regular expressions and tokens. In order to support the Float data type, we had to modify the existing Integer regular expression so that it does not intersect with the new Float regular expression. Additional regular expressions were needed for List and Dictionary where we had to add new tokens for square and curly brackets. (ListOpenBracket, ListCloseBracket, MapOpenBracket ,MapCloseBracket) Lastly we have also added another regular expression and token for booleans to catch \textbf{True} and \textbf{False}.
+Lexer changes were limited to the addition of new regular expressions and tokens. In order to support the Float data type, we had to modify the existing Integer regular expression so that it does not intersect with the new Float regular expression. Additional regular expressions were needed for List and Dictionary where we had to add new tokens for square and curly brackets. (ListOpenBracket, ListCloseBracket, MapOpenBracket ,MapCloseBracket) Lastly we have also added another regular expression and token for Booleans to handle \textbf{True} and \textbf{False} statements.
 
 \subsection{Parser}
 Following the lexer changes, we had to modify the 'Simple' parser to include new parser production rules. Here for each additional data type a new basic expression production rule was created that was responsible for returning the proper AST node construct.
 
 \subsection{Abstract Syntax Tree}
-In order to connect the tokens provided by the Lexer within an AST, we also needed to create new AST node defintions. Therefore, we have added 6 new literals (FloatLiteral, StringLiteral, BoolLiteral, KeyValueLiteral, ListLiteral, DictLiteral).
+In order to connect the tokens provided by the Lexer within an AST, we also needed to create new AST node definitions. Therefore, we have added 6 new literals (FloatLiteral, StringLiteral, BoolLiteral, KeyValueLiteral, ListLiteral, DictLiteral).
 
 \subsection{Object model}
-Implementing and working with the new 'Simple' data types required also changes to the object model. Same as before, we added 6 new obejcts, one for each new data type. All extend the 'W\_NormalObject' prototype and include additional methods that allow certain object interaction needed for the interpreter code.
+Implementing and working with the new 'Simple' data types required also changes to the object model. Same as before, we added 6 new objects, one for each new data type. All objects extend the 'W\_NormalObject' prototype and include additional methods that allow certain object interaction needed for the interpreter code.
 
 \subsection{Interpreter}
-Lastly there were major changes to the interpreter code itself. Besides definiting additional 'eval' cases, it was also necessary to modify the 'eval\_MethodCall' and 'eval\_PrimitiveMethodCall' definitions. Especially inside 'eval\_PrimitiveMethodCall' we added code to handle built-ins for each new data type.
+Lastly there were major changes to the interpreter code itself. Besides defining additional 'eval' cases, it was also necessary to modify the 'eval\_MethodCall' and 'eval\_PrimitiveMethodCall' definitions. Especially inside 'eval\_PrimitiveMethodCall' we added code to handle built-ins for each new data type.
 
 
 \subsection{Built-ins}
@@ -40,16 +40,16 @@ More information regarding added default built-ins can be found in [\ref{bins}]
 
 \section{New Data Types}
 \subsection{Integer/Float}
-The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type convertion of operands. \\
+The new 'W\_Float' type follows the previously available 'W\_Integer' definition. It uses all 'W\_Integer' supported arithmetic operations (built-ins) and allows for operations with mixed typed operands eg. it is possible to add an integer and a float without explicit type conversion of operands. \\
 \\ Integer example: \textit{i = 1337} or \textit{i = -666} 
 \\ Float example: \textit{f = 1.337} or \textit{f = -6.66} \\\\
-Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type convertion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additionals function, for example comparistion operations, can be found in the 'Built-ins' section [\ref{intfloat}].
+Note that the result of arithmetic operations with mixed typed operands will always be of type 'W\_Float'. In a scenario where explicit type conversion is needed, we have also included functions that parse integer to float, integer to string, floats to string and vice versa. Additional functions, for example comparison operations, can be found in the 'Built-ins' section [\ref{intfloat}].
 
 \subsection{Boolean}
 In order to write more complex programs with combined logic constraints for example within if statements we implemented the 'W\_Boolean' object extending 'W\_NormalObject'.\\
 \\ Boolean example: \textit{t = True} or \textit{f = False} \\\\
-This type has several built-in methods to combine boolean expressions like and, or, not, nor, nand, xor and xnor.
-The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a boolean value. Examples can be found in the "Built-ins" section below.
+This type has several built-in methods to combine Boolean expressions like and, or, not, nor, nand, xor and xnor.
+The semantics are like \texttt{b1 and(b2)} where b2 can be another nested method returning a Boolean value. Examples can be found in the "Built-ins" section below.
 
 
 \subsection{String}
@@ -66,11 +66,11 @@ We have also provided several built-in functions [\ref{listbuilt}] that allow in
 \label{dicts}
 The dictionary object 'W\_Dict' extends 'W\_NormalObject' and is internally implemented using a Python dictionary.
 Relating to the semantics of a dictionary we decided to represent each element as a key-value tuple, the same way it is done in Python, i.e. using the form \texttt{key:value} for its elements. \\\\ Dictionary example: \textit{dict = \{1:2, 1.0:2.0, "key":"value", 2:[1], 3:\{1:2\}\}} \\\\
-As can be seen, lists and dictionaries may not be used as keys. Therefore only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python). Furthermore we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
+As can be seen, lists and dictionaries may not be used as keys. Therefore, only 'W\_String', 'W\_Integer' and 'W\_Float' objects are considered valid keys for a dictionary entry (as it is in Python). Furthermore, we have decided to allow mixed types of keys in a single dictionary. Implemented built-ins can be found in the 'Built-ins' section [\ref{builtin_dict}] below.
 
 \subsection{Key-Value Tuple}
 Since we have decided to implement dictionaries like it is done in Python, i.e. using the semantic \texttt{key:value} for the elements, we need to provide such an object.
-Essentially a W\_KeyValue object is just a wrapper for two values semantically splited by a colon.
+Essentially a W\_KeyValue object is just a wrapper for two values semantically split by a colon.
 Like described in [\ref{dicts}] valid keys are of the type 'W\_String', 'W\_Integer' or 'W\_Float'. This object does not provide any built-in methods because it is just used within dictionaries.
 
 \section{Built-ins}
@@ -194,7 +194,7 @@ Example: \textit{b = True equals(True)}
 
 Example: \\ \textit{l = [1,2,3]} \\ \textit{l add(4)}
 
-\item insert(x,y): Insert element y to list at position x - moves existing elements of list one position to the right. If position does not exisit, new element is simply added to the end of the list.
+\item insert(x,y): Insert element y to list at position x - moves existing elements of list one position to the right. If position does not exist, new element is simply added to the end of the list.
 
 Example: \\ \textit{l = [1,3]} \\ \textit{l insert(1,2)}
 
@@ -300,9 +300,9 @@ Example: \textit{l = e\_range(5,10)}
 
 Example: \textit{fib = fibonacci(8)}
 
-\item ggT(x,y): Returns the greatest divisor of x and y using the euclidian algorithm
+\item gcd(x,y): Returns the greatest common divisor of x and y using the euclidian algorithm
 
-Example: \textit{divisor = ggT(12,144)}
+Example: \textit{divisor = gcd(12,144)}
 
 \item isPrime(x): Checks if the given number is a prime number
 
