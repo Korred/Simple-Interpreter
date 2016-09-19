@@ -162,23 +162,35 @@ def test_interpreter_dict():
 
 def test_interpreter_add_del_dict():
     ast = parse("""
-a = {2:1,1:2,3:4}
-a del(1)
-b = a len
-c = {}
-c del(1)
-c del('a')
-c del(1.2)
+m1 = {2:1,1:2,3:4}
+m2 = {2.2:12,'z':13,3:14}
+
+m1 del(1)
+m2 del(2.2)
+m2 del('z')
+m1len = m1 len
+m2len1 = m2 len
+m2 del(3)
+m2len2 = m2 len
+m2 add(3.2,'abc')
+
+m3 = {}
+m3 del(1)
+m3 del('a')
+m3 del(1.2)
 """)
     interpreter = Interpreter()
     w_module = interpreter.make_module()
     interpreter.eval(ast, w_module)
-    d = w_module.getvalue("a")
+    d = w_module.getvalue("m1")
     assert d.getelement(2).value == 1
     assert d.getelement(3).value == 4
     assert d.getelement(1) is None
-    assert w_module.getvalue("b").value == 2
-    assert w_module.getvalue("c").elements == {}
+    assert w_module.getvalue("m1len").value == 2
+    assert w_module.getvalue("m2len1").value == 1
+    assert w_module.getvalue("m2len2").value == 0
+    assert w_module.getvalue("m2").getelement(3.2).value == 'abc'
+    assert w_module.getvalue("m3").elements == {}
 
 
 def test_interpreter_builtin_dict():
@@ -313,3 +325,14 @@ d add(1,3)
     interpreter.eval(ast, w_module)
     d = w_module.getvalue("d")
     assert d.getelement(1).value == 3
+
+ast = parse("""
+if 2 mod(3) equals(0):
+    a = False
+else:
+    a = True
+""")
+interpreter = Interpreter()
+w_module = interpreter.make_module()
+interpreter.eval(ast, w_module)
+print(w_module.getvalue("a").value)
