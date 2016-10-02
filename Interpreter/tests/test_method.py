@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 from simpleparser import parse
 from interpreter import Interpreter
 

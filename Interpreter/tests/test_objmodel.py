@@ -1,3 +1,5 @@
+import sys
+sys.path.append("..")
 from objmodel import W_Integer, W_NormalObject
 
 

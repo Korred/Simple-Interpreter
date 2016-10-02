@@ -1,5 +1,5 @@
-import py
-
+import sys
+sys.path.append("..")
 from simpleparser import ParseError, parse
 from simplelexer import lex
 from simpleast import *
